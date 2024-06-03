@@ -1,0 +1,5 @@
+None,None,None,0,0,1,0
+Revolver,Ballistic,None,10,0,1,10
+Handgun,Ballistic,None,15,0,1,20
+Grenade Belt,Explosive,Ballistic,5,10,1,10
+Rocket Launcher,Explosive,None,50,0,4,30

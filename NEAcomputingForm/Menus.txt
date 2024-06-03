@@ -1,0 +1,5 @@
+Main,1,The place that the user is put into after the loading is done,2,3,0,0,0,0,0,0,0,0
+Base,2,Where the user interacts with the base features,1,4,0,0,0,0,0,0,0,0
+Settings,3,Where the user changes settings,1,0,0,0,0,0,0,0,0,0
+Specialist,4,Where the user trains specialists,1,Previous Specialist,Next Specialist,Train,5,0,0,0,0,0
+Change weapons,5,where the user changes the weapons,4,0,0,0,0,0,0,0,0,0
