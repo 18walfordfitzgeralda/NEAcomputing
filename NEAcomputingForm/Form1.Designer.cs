@@ -41,13 +41,11 @@
             label3 = new Label();
             txtCurrentInput = new TextBox();
             label4 = new Label();
-            label5 = new Label();
-            labelCountdown = new Label();
-            label6 = new Label();
             SuspendLayout();
             // 
             // txtOut
             // 
+            txtOut.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             txtOut.Location = new Point(82, 85);
             txtOut.Name = "txtOut";
             txtOut.ReadOnly = true;
@@ -57,21 +55,23 @@
             // 
             // buttonContinue
             // 
+            buttonContinue.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             buttonContinue.Location = new Point(482, 367);
             buttonContinue.Name = "buttonContinue";
-            buttonContinue.Size = new Size(83, 33);
+            buttonContinue.Size = new Size(218, 33);
             buttonContinue.TabIndex = 12;
-            buttonContinue.Text = "Continue";
+            buttonContinue.Text = "Debug button 2";
             buttonContinue.UseVisualStyleBackColor = true;
             buttonContinue.Click += buttonContinue_Click;
             // 
             // buttonClear
             // 
+            buttonClear.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             buttonClear.Location = new Point(482, 313);
             buttonClear.Name = "buttonClear";
-            buttonClear.Size = new Size(83, 33);
+            buttonClear.Size = new Size(218, 33);
             buttonClear.TabIndex = 13;
-            buttonClear.Text = "Clear";
+            buttonClear.Text = "Debug button 1";
             buttonClear.UseVisualStyleBackColor = true;
             buttonClear.Click += buttonClear_Click;
             // 
@@ -83,6 +83,7 @@
             // 
             // labelTime
             // 
+            labelTime.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             labelTime.AutoSize = true;
             labelTime.Location = new Point(97, 43);
             labelTime.Name = "labelTime";
@@ -98,6 +99,7 @@
             // 
             // labelGamestate
             // 
+            labelGamestate.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             labelGamestate.AutoSize = true;
             labelGamestate.Location = new Point(284, 43);
             labelGamestate.Name = "labelGamestate";
@@ -107,6 +109,7 @@
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             label1.AutoSize = true;
             label1.Location = new Point(82, 28);
             label1.Name = "label1";
@@ -116,6 +119,7 @@
             // 
             // label2
             // 
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             label2.AutoSize = true;
             label2.Location = new Point(82, 58);
             label2.Name = "label2";
@@ -125,6 +129,7 @@
             // 
             // label3
             // 
+            label3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             label3.AutoSize = true;
             label3.Location = new Point(284, 28);
             label3.Name = "label3";
@@ -134,6 +139,7 @@
             // 
             // txtCurrentInput
             // 
+            txtCurrentInput.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             txtCurrentInput.Location = new Point(607, 55);
             txtCurrentInput.Name = "txtCurrentInput";
             txtCurrentInput.ReadOnly = true;
@@ -142,6 +148,7 @@
             // 
             // label4
             // 
+            label4.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             label4.AutoSize = true;
             label4.Location = new Point(520, 58);
             label4.Name = "label4";
@@ -149,41 +156,11 @@
             label4.TabIndex = 20;
             label4.Text = "Current Input:";
             // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(607, 298);
-            label5.Name = "label5";
-            label5.Size = new Size(93, 15);
-            label5.TabIndex = 21;
-            label5.Text = "Time remaining:";
-            // 
-            // labelCountdown
-            // 
-            labelCountdown.AutoSize = true;
-            labelCountdown.Location = new Point(654, 313);
-            labelCountdown.Name = "labelCountdown";
-            labelCountdown.Size = new Size(13, 15);
-            labelCountdown.TabIndex = 22;
-            labelCountdown.Text = "5";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(640, 328);
-            label6.Name = "label6";
-            label6.Size = new Size(50, 15);
-            label6.TabIndex = 23;
-            label6.Text = "seconds";
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(label6);
-            Controls.Add(labelCountdown);
-            Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(txtCurrentInput);
             Controls.Add(label3);
@@ -215,8 +192,5 @@
         private Label label3;
         private TextBox txtCurrentInput;
         private Label label4;
-        private Label label5;
-        private Label labelCountdown;
-        private Label label6;
     }
 }

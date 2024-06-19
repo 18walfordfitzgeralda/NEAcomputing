@@ -20,7 +20,7 @@ namespace NEAcomputingForm
         List<Levelset> levels = new List<Levelset>();//a list to contain all the levels ( can be accessed from anywhere in form 1)
         DatabaseConnector databaseConnector = new DatabaseConnector();// a database connector (it does what it says on the tin {it allows connection to a database})
         NumpadButtons form2;
-        public Form1() 
+        public Form1()
         {
             InitializeComponent();
         }
@@ -33,7 +33,7 @@ namespace NEAcomputingForm
             }
             else
             {
-                Output("Problem? input was" + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
+                //Output("Problem? input was" + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
                 string[] nextMenuNumbersTemp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo();
                 LoadNextMenu(nextMenuNumbersTemp[buttonNumber]);
 
@@ -61,7 +61,7 @@ namespace NEAcomputingForm
                 }
                 catch (Exception ex)
                 {
-                    Output(i.ToString() + " does not lead to another menu, it leads to " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i]);
+                    Output(i.ToString() + " " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i]);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace NEAcomputingForm
         }
         private void buttonClear_Click(object sender, EventArgs e) //clears the output
         {
-            txtOut.Clear();
+             txtOut.Clear();
         }
         private void buttonContinue_Click(object sender, EventArgs e)
         {
@@ -132,7 +132,7 @@ namespace NEAcomputingForm
             form2 = new NumpadButtons();
 
             form2.Show();//Makes the numpad visible
-            Output("Hello");
+            //Output("Hello");
             LoadThingsIn();
             CurrentMenu.SetMenuList(menuList);
 
@@ -145,8 +145,11 @@ namespace NEAcomputingForm
             LoadMenus("Menus.txt");//loads in all the menus from specified file
             loadLevels(1);//loads in the levels in the level set specified
 
-
-            CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
+            try
+            {
+                CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
+            }
+            catch (Exception ex) { Output(ex.ToString() + " the first menu is not loading in please fix"); }
         }
         private void LoadWeapons() //loads in all the weapons 
         {
@@ -197,7 +200,7 @@ namespace NEAcomputingForm
                         string[] optionNumbers = new string[] { temp[3], temp[4], temp[5], temp[6], (temp[7]), (temp[8]), (temp[9]), (temp[10]), temp[11], (temp[12]) };
                         tempMenu = new MenuNavigation(temp[0], temp[1], optionNumbers);
                         menuList.Add(tempMenu);
-                        Output(line);
+                        //Output(line);
                         line = sr.ReadLine();
                     }
 
@@ -265,7 +268,7 @@ namespace NEAcomputingForm
             try
             {
                 string line;
-                
+
                 using (StreamReader sr = new StreamReader("TutorialLines.txt"))
                 {
                     line = sr.ReadLine();
@@ -290,7 +293,7 @@ namespace NEAcomputingForm
             try
             {
                 string line;
-                
+
                 using (StreamReader sr = new StreamReader(documentName))
                 {
                     line = sr.ReadLine();
@@ -600,6 +603,13 @@ namespace NEAcomputingForm
             //this.EnemyWeapon = EnemyWeapon;    //For future me to deal with when he has time (convert string to weapon using lookup table) (make subroutine for it)
             this.dodgeChance = dodgechance;
         }
+        public string getName()
+        {
+            return name;
+        }
+        public int getDodgeChance() { return this.dodgeChance; }
+        public int getHealth() { return this.health; }
+        public void setHealth(int newHealth) { this.health = newHealth; }
     }
     class Level //template for levels 
     {
@@ -615,6 +625,9 @@ namespace NEAcomputingForm
         {
             this.enemyList.Add(enemy);
         }
+        public List<Enemy> getEnemyList() { return this.enemyList; }
+        public int getLevelNum() { return this.levelNum; }
+        public int getLevelSetNum() { return this.levelSetNum; }
     }
     class Levelset //a template for a set of levels 
     {
@@ -690,7 +703,7 @@ namespace NEAcomputingForm
     } //the template for the menus outside of combat which inherits from the menu class
     class CombatMenu : Menu
     {
-        //List<CombatOption> options = new List<CombatOptions>();//this list will hold the different combat options the player can select from this menu
+        List<CombatOption> options = new List<CombatOption>();//this list will hold the different combat options the player can select from this menu
         public CombatMenu(string MenuName, string MenuNumber) : base(MenuName, MenuNumber) { }
 
         Specialist currentSpecialist;
@@ -700,6 +713,23 @@ namespace NEAcomputingForm
             this.currentSpecialist = squad.GetSquad()[specialistPos];
         }
         public Specialist getCurrentSpecialist() { return this.currentSpecialist; }
+
+        public void createCombatOptions(Specialist person) 
+        {
+            Weapon[] bag = person.GetWeaponBag();
+           
+            foreach (Weapon weapon in bag) 
+            { 
+                string optionName = weapon.getName();
+                string DmgType1 = weapon.getDamageType1();
+                string DmgType2 = weapon.getDamageType2();
+                int Type1Dmg = weapon.getType1Damage();
+                int Type2Dmg = weapon.getType2Damage();
+                int StamCost = weapon.getActionsConsumed();
+                this.options.Add(new CombatOption(optionName,DmgType1,DmgType2,Type1Dmg,Type2Dmg,StamCost));
+            }
+            
+        }
 
         //Here shall be the code that allows the user to make decisions in combat
 
