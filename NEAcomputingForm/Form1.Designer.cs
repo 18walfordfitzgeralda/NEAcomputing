@@ -41,6 +41,7 @@
             label3 = new Label();
             txtCurrentInput = new TextBox();
             label4 = new Label();
+            button1 = new Button();
             SuspendLayout();
             // 
             // txtOut
@@ -156,11 +157,22 @@
             label4.TabIndex = 20;
             label4.Text = "Current Input:";
             // 
+            // button1
+            // 
+            button1.Location = new Point(284, 313);
+            button1.Name = "button1";
+            button1.Size = new Size(159, 64);
+            button1.TabIndex = 21;
+            button1.Text = "Debug button 3 (enter combat test)";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button1);
             Controls.Add(label4);
             Controls.Add(txtCurrentInput);
             Controls.Add(label3);
@@ -192,5 +204,6 @@
         private Label label3;
         private TextBox txtCurrentInput;
         private Label label4;
+        private Button button1;
     }
 }

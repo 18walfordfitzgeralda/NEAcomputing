@@ -13,7 +13,7 @@ namespace NEAcomputingForm
         string gamestate = "Loading";// a string that can be accessed anywhere in form 1
         MenuNavigation CurrentMenu = new MenuNavigation("Loading", "0");//creates the most basic menu to let the player know the game is loading and also sets the menu that can be accessed from anywhere in form 1
         List<MenuNavigation> menuList = new List<MenuNavigation>();// a list of menus that can be accessed from anywhere in form 1
-
+        bool inCombat = false;
         Squad team = new Squad("My Team");//same as above but with a squad (default name is My Team
         SecretBase Secretbase = new SecretBase();//same as above but with a secretbase
         WeaponShop weaponshop = new WeaponShop();//...weaponshop
@@ -93,7 +93,7 @@ namespace NEAcomputingForm
         }
         private void buttonClear_Click(object sender, EventArgs e) //clears the output
         {
-             txtOut.Clear();
+            txtOut.Clear();
         }
         private void buttonContinue_Click(object sender, EventArgs e)
         {
@@ -144,7 +144,7 @@ namespace NEAcomputingForm
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
             loadLevels(1);//loads in the levels in the level set specified
-
+            team.AddToSquad(new Specialist("Debug man"));
             try
             {
                 CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
@@ -310,6 +310,10 @@ namespace NEAcomputingForm
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
         }
 
+        private void button1_Click(object sender, EventArgs e) // this is a debug button to test the combat system
+        {
+            inCombat = true;
+        }
     }
 
     //From here starts the classes which I use in Form1
@@ -486,19 +490,21 @@ namespace NEAcomputingForm
     class Specialist //template for a specialist 
     {
         string name;
-        int strength = 0;
-        int perception = 0;
-        int endurance = 0;
+        int strength = 100;
+        int perception = 100;
+        int endurance = 100;
         //charisma would go here but there is no need for it in this game
-        int intelligence = 0;
-        int agility = 0;
-        int luck = 0;
+        int intelligence = 100;
+        int agility = 100;
+        int luck = 100;
         int maxHealth = 100;
         int currentHealth;
-        int stamina;
+        int maxstamina = 5;
+        int currentStamina = 5;
         Weapon equippedWeapon;
         Weapon[] baggedWeapons = new Weapon[5];//Each specialist can have up to 5 weapons equipped
-
+        List<string> damageResistances = new List<string>();
+        bool conscious = true;
         public Specialist(string name)
         {
             this.name = name;
@@ -506,6 +512,45 @@ namespace NEAcomputingForm
         public string getName()
         {
             return this.name;
+        }
+
+        public bool TryCombatOption(CombatOption combatOption) 
+        { 
+            currentStamina -= combatOption.getStaminaCost();
+            if (currentStamina<= 0) { return false; }
+            return true;
+        }
+
+        //health stuff
+        public int getCurrentHealth() 
+        {
+            return this.currentHealth;
+        }
+        public void Heal(int amountHealed,bool addsShield) 
+        {
+            if (this.currentHealth + amountHealed > this.maxHealth && !addsShield)
+            {
+                currentHealth = maxHealth;
+            }
+            else if (this.currentHealth + amountHealed > this.maxHealth && addsShield)
+            {
+                currentHealth += amountHealed;
+            }
+            else 
+            {
+                currentHealth += amountHealed;
+            }
+        
+        }
+        public void Damage(int amountDamaged,string damageType) 
+        {
+            bool resisted = false;
+            foreach (string resist in this.damageResistances)  
+            {
+                if (resist.Equals(damageType)) { resisted = true; }
+            }
+            if (!resisted) { this.currentHealth -= amountDamaged; }
+            if(this.currentHealth>=0) this.conscious = false;
         }
 
         //stat control
@@ -708,27 +753,39 @@ namespace NEAcomputingForm
 
         Specialist currentSpecialist;
 
+        public void setCurrentSpecialist(Specialist specialist) 
+        { 
+            this.currentSpecialist = specialist; 
+        }
         public void selectNextSpecialist(Squad squad, int specialistPos)
         {
             this.currentSpecialist = squad.GetSquad()[specialistPos];
         }
-        public Specialist getCurrentSpecialist() { return this.currentSpecialist; }
+        public Specialist getCurrentSpecialist()
+        {
+            return this.currentSpecialist;
+        }
 
-        public void createCombatOptions(Specialist person) 
+        public List<CombatOption> GetCombatOptions()
+        {
+            return this.options;
+        }
+        public void createCombatOptions(Specialist person)
         {
             Weapon[] bag = person.GetWeaponBag();
-           
-            foreach (Weapon weapon in bag) 
-            { 
+
+            foreach (Weapon weapon in bag)
+            {
                 string optionName = weapon.getName();
                 string DmgType1 = weapon.getDamageType1();
                 string DmgType2 = weapon.getDamageType2();
                 int Type1Dmg = weapon.getType1Damage();
                 int Type2Dmg = weapon.getType2Damage();
                 int StamCost = weapon.getActionsConsumed();
-                this.options.Add(new CombatOption(optionName,DmgType1,DmgType2,Type1Dmg,Type2Dmg,StamCost));
+                this.options.Add(new CombatOption(optionName, DmgType1, DmgType2, Type1Dmg, Type2Dmg, StamCost));
             }
-            
+
+
         }
 
         //Here shall be the code that allows the user to make decisions in combat
