@@ -42,6 +42,8 @@
             txtCurrentInput = new TextBox();
             label4 = new Label();
             button1 = new Button();
+            label5 = new Label();
+            llbCombat = new Label();
             SuspendLayout();
             // 
             // txtOut
@@ -167,11 +169,31 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(395, 28);
+            label5.Name = "label5";
+            label5.Size = new Size(69, 15);
+            label5.TabIndex = 22;
+            label5.Text = "In combat?:";
+            // 
+            // llbCombat
+            // 
+            llbCombat.AutoSize = true;
+            llbCombat.Location = new Point(405, 43);
+            llbCombat.Name = "llbCombat";
+            llbCombat.Size = new Size(31, 15);
+            llbCombat.TabIndex = 23;
+            llbCombat.Text = "flase";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(llbCombat);
+            Controls.Add(label5);
             Controls.Add(button1);
             Controls.Add(label4);
             Controls.Add(txtCurrentInput);
@@ -205,5 +227,7 @@
         private TextBox txtCurrentInput;
         private Label label4;
         private Button button1;
+        private Label label5;
+        private Label llbCombat;
     }
 }

@@ -20,6 +20,9 @@ namespace NEAcomputingForm
         List<Levelset> levels = new List<Levelset>();//a list to contain all the levels ( can be accessed from anywhere in form 1)
         DatabaseConnector databaseConnector = new DatabaseConnector();// a database connector (it does what it says on the tin {it allows connection to a database})
         NumpadButtons form2;
+        CombatMenu combatTurn;
+        bool playerTurn = false;
+        bool playerTurnNext = false;
         public Form1()
         {
             InitializeComponent();
@@ -27,16 +30,23 @@ namespace NEAcomputingForm
         public void Form2Access(int buttonNumber) //allows form2 to call the functions inside form1 without making all of them public
         {
             txtCurrentInput.Text = buttonNumber.ToString();
-            if (CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber] == "0")
+            if (!inCombat)
             {
-                Output("Menu remain same due to input of: " + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
+                if (CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber] == "0")
+                {
+                    Output("Menu remain same due to input of: " + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
+                }
+                else
+                {
+                    //Output("Problem? input was" + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
+                    string[] nextMenuNumbersTemp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo();
+                    LoadNextMenu(nextMenuNumbersTemp[buttonNumber]);
+
+                }
             }
             else
             {
-                //Output("Problem? input was" + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
-                string[] nextMenuNumbersTemp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo();
-                LoadNextMenu(nextMenuNumbersTemp[buttonNumber]);
-
+                playerTurnInput(buttonNumber);
             }
         }
         private void Runtime2_Tick(object sender, EventArgs e)
@@ -86,6 +96,11 @@ namespace NEAcomputingForm
 
 
             }
+            if (inCombat && playerTurn && playerTurnNext) 
+            { 
+                playerCombatTurn();
+                llbCombat.Text = "Yes"; 
+            }
         }
         private void Output(string output) // a custom text based output that I will use instead of the console
         {
@@ -94,6 +109,7 @@ namespace NEAcomputingForm
         private void buttonClear_Click(object sender, EventArgs e) //clears the output
         {
             txtOut.Clear();
+            team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); //sets all of the weapons in the bad to the revolver
         }
         private void buttonContinue_Click(object sender, EventArgs e)
         {
@@ -313,6 +329,55 @@ namespace NEAcomputingForm
         private void button1_Click(object sender, EventArgs e) // this is a debug button to test the combat system
         {
             inCombat = true;
+            playerTurnNext = true;
+            playerTurn = true;
+        }
+
+        private void playerCombatTurn() // the display side of the player turn
+        {
+            playerTurnNext = false;
+            int numOfSpecialists = team.GetSquad().Count;
+            List<Specialist> conciousSpecialists = new List<Specialist>();
+            for (int i = 0; i < numOfSpecialists; i++)
+            {
+                if (team.GetSquad()[i].isConcious())
+                {
+                    conciousSpecialists.Add(team.GetSquad()[i]);
+                }
+            }
+            combatTurn = new CombatMenu("Player Combat Turn", "MEL");
+            combatTurn.setCurrentSpecialist(conciousSpecialists[0]);
+            combatTurn.createCombatOptions(combatTurn.getCurrentSpecialist());
+            combatTurn.setListSpecialists(conciousSpecialists);
+            Output("0: select next specialist");
+            int count = 1;
+            foreach (CombatOption option in combatTurn.GetCombatOptions())
+            {
+                Output(count + ":" + option.getOptionName());
+                count++;
+            }
+
+        }
+        private void playerTurnInput(int buttonNumber)//allows the player to choose their input but only on their turn
+        {
+            if (playerTurn)
+            {
+                if (buttonNumber == 0)
+                {
+                    combatTurn.selectNextSpecialist();
+                    playerCombatTurn();
+                }
+                int count = 1;
+                foreach (CombatOption option in combatTurn.GetCombatOptions())
+                {
+                    if (buttonNumber == count) { DoOption(option); }
+                    count++;
+                }
+            }
+        }
+        private void DoOption(CombatOption option)// here the option the player chose will be performed
+        {
+
         }
     }
 
@@ -514,19 +579,34 @@ namespace NEAcomputingForm
             return this.name;
         }
 
-        public bool TryCombatOption(CombatOption combatOption) 
-        { 
-            currentStamina -= combatOption.getStaminaCost();
-            if (currentStamina<= 0) { return false; }
+        public bool TryCombatOption(CombatOption combatOption)
+        {
+            this.currentStamina -= combatOption.getStaminaCost();
+            if (this.currentStamina <= 0)
+            {
+                this.currentStamina += combatOption.getStaminaCost();
+                return false;
+            }
             return true;
         }
 
         //health stuff
-        public int getCurrentHealth() 
+
+        public void startFight()
+        {
+            this.conscious = true;
+            this.Heal(999999, false);
+
+        }
+        public bool isConcious()
+        {
+            return this.conscious;
+        }
+        public int getCurrentHealth()
         {
             return this.currentHealth;
         }
-        public void Heal(int amountHealed,bool addsShield) 
+        public void Heal(int amountHealed, bool addsShield)
         {
             if (this.currentHealth + amountHealed > this.maxHealth && !addsShield)
             {
@@ -536,21 +616,22 @@ namespace NEAcomputingForm
             {
                 currentHealth += amountHealed;
             }
-            else 
+            else
             {
                 currentHealth += amountHealed;
             }
-        
+
         }
-        public void Damage(int amountDamaged,string damageType) 
+        public void Damage(int amountDamaged, string damageType)
         {
             bool resisted = false;
-            foreach (string resist in this.damageResistances)  
+            foreach (string resist in this.damageResistances)
             {
                 if (resist.Equals(damageType)) { resisted = true; }
             }
             if (!resisted) { this.currentHealth -= amountDamaged; }
-            if(this.currentHealth>=0) this.conscious = false;
+            if (this.currentHealth >= 0) { this.conscious = false; }
+
         }
 
         //stat control
@@ -750,16 +831,27 @@ namespace NEAcomputingForm
     {
         List<CombatOption> options = new List<CombatOption>();//this list will hold the different combat options the player can select from this menu
         public CombatMenu(string MenuName, string MenuNumber) : base(MenuName, MenuNumber) { }
-
+        List<Specialist> specialists = new List<Specialist>();
         Specialist currentSpecialist;
 
-        public void setCurrentSpecialist(Specialist specialist) 
-        { 
-            this.currentSpecialist = specialist; 
-        }
-        public void selectNextSpecialist(Squad squad, int specialistPos)
+        public void setListSpecialists(List<Specialist> specialists)
         {
-            this.currentSpecialist = squad.GetSquad()[specialistPos];
+            this.specialists = specialists;
+        }
+        public void setCurrentSpecialist(Specialist specialist)
+        {
+            this.currentSpecialist = specialist;
+        }
+        public void selectNextSpecialist()
+        {
+            int i = specialists.IndexOf(currentSpecialist);
+            i++;
+            if (i == specialists.Count)
+            {
+                i -= specialists.Count;
+            }
+            currentSpecialist = specialists[i];
+            createCombatOptions(currentSpecialist);
         }
         public Specialist getCurrentSpecialist()
         {
@@ -773,7 +865,7 @@ namespace NEAcomputingForm
         public void createCombatOptions(Specialist person)
         {
             Weapon[] bag = person.GetWeaponBag();
-
+            this.options = new List<CombatOption>();
             foreach (Weapon weapon in bag)
             {
                 string optionName = weapon.getName();
@@ -784,9 +876,9 @@ namespace NEAcomputingForm
                 int StamCost = weapon.getActionsConsumed();
                 this.options.Add(new CombatOption(optionName, DmgType1, DmgType2, Type1Dmg, Type2Dmg, StamCost));
             }
+            this.options.Add(new CombatOption("Run from battle", "Escape", "Escape", -1, -1, 0));
 
-
-        }
+        } //creates most of the combat options from the weapons in the bag and also the escape option
 
         //Here shall be the code that allows the user to make decisions in combat
 
@@ -833,4 +925,16 @@ namespace NEAcomputingForm
             return this.StaminaCost;
         }
     }
+
+
+
+    /* 
+     To do list:                                priority (lower better)
+    Finish combat system                           1
+    Convert Debug buttons into a dev menu          5
+    Create save/ load system for players           1
+    Fill out files                                 5
+    Polish stuff                                   9
+     
+     */
 }
