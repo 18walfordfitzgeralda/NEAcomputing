@@ -23,6 +23,9 @@ namespace NEAcomputingForm
         CombatMenu combatTurn;
         bool playerTurn = false;
         bool playerTurnNext = false;
+        bool enemyTurn = false;
+        Level currentlevel;
+        bool startingCombat = false;
         public Form1()
         {
             InitializeComponent();
@@ -97,7 +100,11 @@ namespace NEAcomputingForm
 
             }
             if (inCombat && playerTurn && playerTurnNext) 
-            { 
+            {
+                if (startingCombat)
+                {
+                    currentlevel = levels[0].GetLevels()[0];
+                }
                 playerCombatTurn();
                 llbCombat.Text = "Yes"; 
             }
@@ -331,6 +338,7 @@ namespace NEAcomputingForm
             inCombat = true;
             playerTurnNext = true;
             playerTurn = true;
+            startingCombat = true;
         }
 
         private void playerCombatTurn() // the display side of the player turn
@@ -377,7 +385,30 @@ namespace NEAcomputingForm
         }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
         {
+            bool optionDone = false;
+            for (int i =0;i<currentlevel.getEnemyList().Count;i++) 
+            {
+                if (!optionDone) 
+                {
+                    if (currentlevel.getEnemyList()[i].getHealth()>0) 
+                    {
+                        int damage1resist = 1;
+                        int damage2resist = 1;
+                        if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                        if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
 
+                        int damage1 = option.getOptionDamage1() / damage1resist;
+                        int damage2 = option.getOptionDamage2() / damage2resist;
+                        currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth()-damage1-damage2);
+                    
+                    }
+                
+                
+                
+                }
+            
+            
+            }
         }
     }
 
@@ -715,6 +746,8 @@ namespace NEAcomputingForm
         }
     }
 
+
+    
     class Enemy //template for the enemies 
     {
         string name;
@@ -722,11 +755,12 @@ namespace NEAcomputingForm
         int dodgeChance;
         int aim;
         int health = 100;
+        List<string> resistances = new List<string>();
         public Enemy(/*number 1*/string name, string EnemyWeapon, int dodgechance, int aim)
         {
             this.aim = aim;
             this.name = name;
-            //this.EnemyWeapon = EnemyWeapon;    //For future me to deal with when he has time (convert string to weapon using lookup table) (make subroutine for it)
+            //this.EnemyWeapon = EnemyWeapon;    //For future me to deal with when he has time and willpower (convert string to weapon using lookup table) (make subroutine for it)
             this.dodgeChance = dodgechance;
         }
         public string getName()
@@ -736,6 +770,16 @@ namespace NEAcomputingForm
         public int getDodgeChance() { return this.dodgeChance; }
         public int getHealth() { return this.health; }
         public void setHealth(int newHealth) { this.health = newHealth; }
+        public bool CheckResistance(string input) 
+        {
+
+            if (resistances.Contains(input)) 
+            { 
+                return true;
+            }
+
+            return false;
+        }
     }
     class Level //template for levels 
     {
@@ -771,6 +815,7 @@ namespace NEAcomputingForm
         {
             this.Levels.Add(level);
         }
+        public List<Level> GetLevels() { return this.Levels; }
     }
 
     class Menu  //The base template for the menus 
@@ -929,7 +974,7 @@ namespace NEAcomputingForm
 
 
     /* 
-     To do list:                                priority (lower better)
+     To do list:                                priority (lower higher priority)
     Finish combat system                           1
     Convert Debug buttons into a dev menu          5
     Create save/ load system for players           1
