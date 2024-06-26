@@ -97,17 +97,10 @@ namespace NEAcomputingForm
                 }
                 if ((!foundItem) && temp.checkIfOwned()) { Secretbase.addWeapon(temp); }
 
+            }
 
-            }
-            if (inCombat && playerTurn && playerTurnNext) 
-            {
-                if (startingCombat)
-                {
-                    currentlevel = levels[0].GetLevels()[0];
-                }
-                playerCombatTurn();
-                llbCombat.Text = "Yes"; 
-            }
+            if (inCombat) { CombatTick(); }
+
         }
         private void Output(string output) // a custom text based output that I will use instead of the console
         {
@@ -341,6 +334,9 @@ namespace NEAcomputingForm
             startingCombat = true;
         }
 
+
+
+        //Here are all of the subroutines which handle combat
         private void playerCombatTurn() // the display side of the player turn
         {
             playerTurnNext = false;
@@ -383,6 +379,33 @@ namespace NEAcomputingForm
                 }
             }
         }
+
+        private void enemyCombatTurn() 
+        {
+            foreach (Enemy enemy in currentlevel.getEnemyList()) 
+            {
+                if (enemy.getHealth() > 0) 
+                {
+                    Weapon weapon = enemy.GetWeapon();
+                    for (int i = 0; i < team.GetSquad().Count; i++) 
+                    {
+                        if (team.GetSquad()[i].isConcious()) 
+                        {
+                            team.GetSquad()[i].Damage(weapon.getType1Damage(),weapon.getDamageType1());
+                            team.GetSquad()[i].Damage(weapon.getType2Damage(), weapon.getDamageType2());
+                            i += 999;
+                        }
+                            
+                    }
+                    
+                }
+            
+            
+            
+            }
+        
+        
+        }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
         {
             bool optionDone = false;
@@ -409,6 +432,73 @@ namespace NEAcomputingForm
             
             
             }
+        }
+
+        private void CombatTick() 
+        {
+            if (startingCombat)
+            {
+                currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
+            }
+            startingCombat = false;
+            bool NoTurnOccuring = !(playerTurn || enemyTurn);
+            
+            if (checkIfPlayerLost()) 
+            {
+                inCombat = false;
+                playerTurn = false;
+                playerTurnNext = false;
+            } // checks to see if the player has lost
+            if (checkIfPlayerWin()) 
+            {
+                inCombat = false;
+                playerTurn = false;
+                playerTurnNext = false;
+                //something something something
+            } //checks to see if the player has won
+            if (NoTurnOccuring&&playerTurnNext&&inCombat)
+            {
+                enemyTurn = false;
+                playerTurnNext = false;
+                playerTurn = true;
+            
+            }//lets the player have their turn 
+            if (NoTurnOccuring&&!playerTurnNext&&inCombat) 
+            {
+                enemyTurn = true;
+                playerTurnNext = true;
+                playerTurn = false;
+
+            }//lets the enemy have their turn
+            if (!NoTurnOccuring&&playerTurnNext&&inCombat) 
+            {
+                
+                playerCombatTurn();
+                llbCombat.Text = "Yes";
+            } //allows the player to actually input and displays options
+
+        }
+        private bool checkIfPlayerWin() 
+        {
+            int count = 0;
+            foreach (Enemy enemy in currentlevel.getEnemyList()) 
+            { 
+                if(enemy.getHealth()<=0) count++;
+            }
+            if(count==currentlevel.getEnemyList().Count) return true;
+
+            return false;
+        } 
+        private bool checkIfPlayerLost() 
+        {
+            int count = 0;
+            foreach (Specialist specialist in team.GetSquad()) 
+            { 
+                if(!specialist.isConcious()) count++;
+            }
+            if(count==team.GetSquad().Count) return true;
+
+            return false;
         }
     }
 
@@ -655,12 +745,14 @@ namespace NEAcomputingForm
         }
         public void Damage(int amountDamaged, string damageType)
         {
-            bool resisted = false;
+            
             foreach (string resist in this.damageResistances)
             {
-                if (resist.Equals(damageType)) { resisted = true; }
+                if (resist.Equals(damageType)) { amountDamaged = (amountDamaged / 2)-1; }
             }
-            if (!resisted) { this.currentHealth -= amountDamaged; }
+            if(amountDamaged<0)amountDamaged = 0;
+            this.currentHealth -= amountDamaged;
+            
             if (this.currentHealth >= 0) { this.conscious = false; }
 
         }
@@ -780,6 +872,7 @@ namespace NEAcomputingForm
 
             return false;
         }
+        public Weapon GetWeapon() { return this.EnemyWeapon; }
     }
     class Level //template for levels 
     {
