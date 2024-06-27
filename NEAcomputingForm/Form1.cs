@@ -263,7 +263,7 @@ namespace NEAcomputingForm
                     int enemyDodgeChance = row.Field<int>(3);
                     int enemyAim = row.Field<int>(4);
                     int enemyLevel = row.Field<int>(5);
-                    Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim);//This bit of code loads all of the information provided by the data base into an enemy
+                    Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim,weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
                 }
                 Levelset levelset = new Levelset(levelSetNum + 1);
@@ -353,6 +353,11 @@ namespace NEAcomputingForm
             combatTurn.setCurrentSpecialist(conciousSpecialists[0]);
             combatTurn.createCombatOptions(combatTurn.getCurrentSpecialist());
             combatTurn.setListSpecialists(conciousSpecialists);
+            foreach (Enemy enemy in currentlevel.getEnemyList()) 
+            {
+                Output(enemy.getHealth().ToString()) ;
+            }
+            
             Output("0: select next specialist");
             int count = 1;
             foreach (CombatOption option in combatTurn.GetCombatOptions())
@@ -450,6 +455,7 @@ namespace NEAcomputingForm
                 playerTurn = false;
                 playerTurnNext = false;
                 llbCombat.Text = "No";
+                Output("Player lost");
             } // checks to see if the player has lost
             if (checkIfPlayerWin()) 
             {
@@ -457,13 +463,14 @@ namespace NEAcomputingForm
                 playerTurn = false;
                 playerTurnNext = false;
                 llbCombat.Text = "No";
-                //something something something
+                Output("Player win");
             } //checks to see if the player has won
             if (NoTurnOccuring&&playerTurnNext&&inCombat)
             {
                 enemyTurn = false;
                 playerTurnNext = false;
                 playerTurn = true;
+                Output("Player turn currently");
             
             }//lets the player have their turn 
             if (NoTurnOccuring&&!playerTurnNext&&inCombat) 
@@ -471,6 +478,7 @@ namespace NEAcomputingForm
                 enemyTurn = true;
                 playerTurnNext = true;
                 playerTurn = false;
+                Output("Enemy turn now");
 
             }//lets the enemy have their turn
             if (!NoTurnOccuring&&playerTurnNext&&inCombat) 
@@ -856,10 +864,15 @@ namespace NEAcomputingForm
         int aim;
         int health = 100;
         List<string> resistances = new List<string>();
-        public Enemy(/*number 1*/string name, string EnemyWeapon, int dodgechance, int aim)
+        public Enemy(/*number 1*/string name, string EnemyWeapon, int dodgechance, int aim,WeaponShop weaponshop)
         {
             this.aim = aim;
             this.name = name;
+            foreach (Weapon w in weaponshop.getShopInventory()) 
+            { 
+                if(w.getName()==EnemyWeapon)this.EnemyWeapon = w;
+            
+            }
             //this.EnemyWeapon = EnemyWeapon;    //For future me to deal with when he has time and willpower (convert string to weapon using lookup table) (make subroutine for it)
             this.dodgeChance = dodgechance;
         }
