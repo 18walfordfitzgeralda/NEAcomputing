@@ -436,6 +436,7 @@ namespace NEAcomputingForm
 
         private void CombatTick() 
         {
+            llbCombat.Text = "Yes";
             if (startingCombat)
             {
                 currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
@@ -448,12 +449,14 @@ namespace NEAcomputingForm
                 inCombat = false;
                 playerTurn = false;
                 playerTurnNext = false;
+                llbCombat.Text = "No";
             } // checks to see if the player has lost
             if (checkIfPlayerWin()) 
             {
                 inCombat = false;
                 playerTurn = false;
                 playerTurnNext = false;
+                llbCombat.Text = "No";
                 //something something something
             } //checks to see if the player has won
             if (NoTurnOccuring&&playerTurnNext&&inCombat)
@@ -474,8 +477,13 @@ namespace NEAcomputingForm
             {
                 
                 playerCombatTurn();
-                llbCombat.Text = "Yes";
+                
             } //allows the player to actually input and displays options
+
+            if (!NoTurnOccuring && enemyTurn && inCombat) 
+            {
+                enemyCombatTurn();
+            }
 
         }
         private bool checkIfPlayerWin() 
