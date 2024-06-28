@@ -26,6 +26,7 @@ namespace NEAcomputingForm
         bool enemyTurn = false;
         Level currentlevel;
         bool startingCombat = false;
+        bool optionsOnDisplay = false;
         public Form1()
         {
             InitializeComponent();
@@ -254,9 +255,12 @@ namespace NEAcomputingForm
                 {
                     templv[i] = new Level(i + 1, levelSetNum + 1);//adds all of the levels to templv
                 }
-
+                /*
                 foreach (DataRow row in database.Tables[0].Rows)//iterates through all of the rows in the database (I only call upon one table)
-                {
+                { 
+                    
+                    //(DEBUG) THIS IS NOT RUNNING, THIS NEEDS TO BE FIXED BEFORE I CAN TEST THE COMBAT SYSTEM *****************
+
                     int enemyID = row.Field<int>(0);//these lines put all of the info into temporary variables
                     string enemyName = row.Field<string>(1);
                     string enemyWeapon = row.Field<string>(2);
@@ -265,7 +269,18 @@ namespace NEAcomputingForm
                     int enemyLevel = row.Field<int>(5);
                     Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim,weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
-                }
+                }*/
+                //the above bit is commented out beause it not run
+                //(DEBUG)
+                int enemyID = 0;
+                string enemyName = "Test4";
+                string enemyWeapon = "Handgun";
+                int enemyDodgeChance = 0;
+                int enemyAim = 0;
+                int enemyLevel = 1;
+                Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);
+                templv[0].AddEnemy(tempE);
+                //(END DEBUG)
                 Levelset levelset = new Levelset(levelSetNum + 1);
                 for (int i = 0; i < 5; i++)
                 {
@@ -339,6 +354,7 @@ namespace NEAcomputingForm
         //Here are all of the subroutines which handle combat
         private void playerCombatTurn() // the display side of the player turn
         {
+            
             playerTurnNext = false;
             int numOfSpecialists = team.GetSquad().Count;
             List<Specialist> conciousSpecialists = new List<Specialist>();
@@ -353,11 +369,11 @@ namespace NEAcomputingForm
             combatTurn.setCurrentSpecialist(conciousSpecialists[0]);
             combatTurn.createCombatOptions(combatTurn.getCurrentSpecialist());
             combatTurn.setListSpecialists(conciousSpecialists);
-            foreach (Enemy enemy in currentlevel.getEnemyList()) 
+            foreach (Enemy enemy in currentlevel.getEnemyList())
             {
-                Output(enemy.getHealth().ToString()) ;
+                Output("Enemy health:" + enemy.getHealth().ToString());
             }
-            
+
             Output("0: select next specialist");
             int count = 1;
             foreach (CombatOption option in combatTurn.GetCombatOptions())
@@ -379,46 +395,50 @@ namespace NEAcomputingForm
                 int count = 1;
                 foreach (CombatOption option in combatTurn.GetCombatOptions())
                 {
-                    if (buttonNumber == count) { DoOption(option); }
+                    if (buttonNumber == count) { DoOption(option); playerTurn = false; optionsOnDisplay = true; }
                     count++;
                 }
             }
+            
         }
 
-        private void enemyCombatTurn() 
+        private void enemyCombatTurn()
         {
-            foreach (Enemy enemy in currentlevel.getEnemyList()) 
+            foreach (Enemy enemy in currentlevel.getEnemyList())
             {
-                if (enemy.getHealth() > 0) 
+                if (enemy.getHealth() > 0)
                 {
                     Weapon weapon = enemy.GetWeapon();
-                    for (int i = 0; i < team.GetSquad().Count; i++) 
+                    for (int i = 0; i < team.GetSquad().Count; i++)
                     {
-                        if (team.GetSquad()[i].isConcious()) 
+                        if (team.GetSquad()[i].isConcious())
                         {
-                            team.GetSquad()[i].Damage(weapon.getType1Damage(),weapon.getDamageType1());
+                            team.GetSquad()[i].Damage(weapon.getType1Damage(), weapon.getDamageType1());
+                            Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
                             team.GetSquad()[i].Damage(weapon.getType2Damage(), weapon.getDamageType2());
                             i += 999;
                         }
-                            
+
                     }
-                    
+
                 }
-            
-            
-            
+
+
+
             }
-        
-        
+            enemyTurn = false;
+            playerTurnNext = true;
+            optionsOnDisplay = false;
+
         }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
         {
             bool optionDone = false;
-            for (int i =0;i<currentlevel.getEnemyList().Count;i++) 
+            for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
             {
-                if (!optionDone) 
+                if (!optionDone)
                 {
-                    if (currentlevel.getEnemyList()[i].getHealth()>0) 
+                    if (currentlevel.getEnemyList()[i].getHealth() > 0)
                     {
                         int damage1resist = 1;
                         int damage2resist = 1;
@@ -427,29 +447,30 @@ namespace NEAcomputingForm
 
                         int damage1 = option.getOptionDamage1() / damage1resist;
                         int damage2 = option.getOptionDamage2() / damage2resist;
-                        currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth()-damage1-damage2);
-                    
+                        currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
+
                     }
-                
-                
-                
+
+
+
                 }
-            
-            
+
+
             }
         }
 
-        private void CombatTick() 
+        private void CombatTick()
         {
             llbCombat.Text = "Yes";
             if (startingCombat)
             {
                 currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
+
             }
             startingCombat = false;
             bool NoTurnOccuring = !(playerTurn || enemyTurn);
-            
-            if (checkIfPlayerLost()) 
+
+            if (checkIfPlayerLost())
             {
                 inCombat = false;
                 playerTurn = false;
@@ -457,7 +478,7 @@ namespace NEAcomputingForm
                 llbCombat.Text = "No";
                 Output("Player lost");
             } // checks to see if the player has lost
-            if (checkIfPlayerWin()) 
+            if (checkIfPlayerWin())
             {
                 inCombat = false;
                 playerTurn = false;
@@ -465,56 +486,68 @@ namespace NEAcomputingForm
                 llbCombat.Text = "No";
                 Output("Player win");
             } //checks to see if the player has won
-            if (NoTurnOccuring&&playerTurnNext&&inCombat)
+
+            if (NoTurnOccuring && playerTurnNext)
             {
                 enemyTurn = false;
                 playerTurnNext = false;
                 playerTurn = true;
+                optionsOnDisplay = false;
                 Output("Player turn currently");
-            
+                
+
             }//lets the player have their turn 
-            if (NoTurnOccuring&&!playerTurnNext&&inCombat) 
+           
+            
+            if (NoTurnOccuring && !playerTurnNext)
             {
                 enemyTurn = true;
                 playerTurnNext = true;
                 playerTurn = false;
+                optionsOnDisplay = true;
                 Output("Enemy turn now");
 
             }//lets the enemy have their turn
-            if (!NoTurnOccuring&&playerTurnNext&&inCombat) 
+            if (playerTurn && !optionsOnDisplay)
             {
-                
+                Output("Player turn debug output");
                 playerCombatTurn();
-                
+
             } //allows the player to actually input and displays options
 
-            if (!NoTurnOccuring && enemyTurn && inCombat) 
+            if (optionsOnDisplay && !playerTurn)
             {
+                Output("Enemy turn yay");
                 enemyCombatTurn();
             }
 
         }
-        private bool checkIfPlayerWin() 
+        private bool checkIfPlayerWin()
         {
             int count = 0;
-            foreach (Enemy enemy in currentlevel.getEnemyList()) 
-            { 
-                if(enemy.getHealth()<=0) count++;
+            foreach (Enemy enemy in currentlevel.getEnemyList())
+            {
+                if (enemy.getHealth() <= 0) count++;
             }
-            if(count==currentlevel.getEnemyList().Count) return true;
+            if (count == currentlevel.getEnemyList().Count) { return true; }
 
             return false;
-        } 
-        private bool checkIfPlayerLost() 
+        }
+        private bool checkIfPlayerLost()
         {
             int count = 0;
-            foreach (Specialist specialist in team.GetSquad()) 
-            { 
-                if(!specialist.isConcious()) count++;
+            foreach (Specialist specialist in team.GetSquad())
+            {
+                if (!specialist.isConcious()) { count++; }
             }
-            if(count==team.GetSquad().Count) return true;
+            if (count == (team.GetSquad().Count+1)) { return true; }
 
             return false;
+        }
+
+        private void debutton4_Click(object sender, EventArgs e)
+        {
+            team.GetSquad()[0].Heal(999999999,true);
         }
     }
 
@@ -526,7 +559,10 @@ namespace NEAcomputingForm
             try
             {
                 // SQL = "SELECT * FROM Enemies;";
-                OleDbConnection conn = connection(dbasename);//Matheo says: glue :P
+                OleDbConnection conn = connection(dbasename);
+
+                //I have traced the problem with the enemies not being loaded in all the way back to here, the rows of the database are simply just not making it into the program, why: I have no clue *************
+
                 OleDbDataAdapter adapter = new OleDbDataAdapter(SQL, conn);//the line above connects to the database by making a temporary copy of the required data
                 DataSet dataSet = new DataSet();
                 adapter.Fill(dataSet, "DATA");//this puts the data into a dataset with the tag DATA
@@ -700,7 +736,7 @@ namespace NEAcomputingForm
         int agility = 100;
         int luck = 100;
         int maxHealth = 100;
-        int currentHealth;
+        int currentHealth = 100;
         int maxstamina = 5;
         int currentStamina = 5;
         Weapon equippedWeapon;
@@ -761,14 +797,14 @@ namespace NEAcomputingForm
         }
         public void Damage(int amountDamaged, string damageType)
         {
-            
+
             foreach (string resist in this.damageResistances)
             {
-                if (resist.Equals(damageType)) { amountDamaged = (amountDamaged / 2)-1; }
+                if (resist.Equals(damageType)) { amountDamaged = (amountDamaged / 2) - 1; }
             }
-            if(amountDamaged<0)amountDamaged = 0;
+            if (amountDamaged < 0) amountDamaged = 0;
             this.currentHealth -= amountDamaged;
-            
+
             if (this.currentHealth >= 0) { this.conscious = false; }
 
         }
@@ -855,7 +891,7 @@ namespace NEAcomputingForm
     }
 
 
-    
+
     class Enemy //template for the enemies 
     {
         string name;
@@ -864,14 +900,14 @@ namespace NEAcomputingForm
         int aim;
         int health = 100;
         List<string> resistances = new List<string>();
-        public Enemy(/*number 1*/string name, string EnemyWeapon, int dodgechance, int aim,WeaponShop weaponshop)
+        public Enemy(/*number 1*/string name, string EnemyWeapon, int dodgechance, int aim, WeaponShop weaponshop)
         {
             this.aim = aim;
             this.name = name;
-            foreach (Weapon w in weaponshop.getShopInventory()) 
-            { 
-                if(w.getName()==EnemyWeapon)this.EnemyWeapon = w;
-            
+            foreach (Weapon w in weaponshop.getShopInventory())
+            {
+                if (w.getName() == EnemyWeapon) this.EnemyWeapon = w;
+
             }
             //this.EnemyWeapon = EnemyWeapon;    //For future me to deal with when he has time and willpower (convert string to weapon using lookup table) (make subroutine for it)
             this.dodgeChance = dodgechance;
@@ -883,11 +919,11 @@ namespace NEAcomputingForm
         public int getDodgeChance() { return this.dodgeChance; }
         public int getHealth() { return this.health; }
         public void setHealth(int newHealth) { this.health = newHealth; }
-        public bool CheckResistance(string input) 
+        public bool CheckResistance(string input)
         {
 
-            if (resistances.Contains(input)) 
-            { 
+            if (resistances.Contains(input))
+            {
                 return true;
             }
 

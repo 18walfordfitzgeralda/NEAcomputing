@@ -44,6 +44,7 @@
             button1 = new Button();
             label5 = new Label();
             llbCombat = new Label();
+            debutton4 = new Button();
             SuspendLayout();
             // 
             // txtOut
@@ -187,11 +188,22 @@
             llbCombat.TabIndex = 23;
             llbCombat.Text = "flase";
             // 
+            // debutton4
+            // 
+            debutton4.Location = new Point(652, 260);
+            debutton4.Name = "debutton4";
+            debutton4.Size = new Size(75, 23);
+            debutton4.TabIndex = 24;
+            debutton4.Text = "Debug 4";
+            debutton4.UseVisualStyleBackColor = true;
+            debutton4.Click += debutton4_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(debutton4);
             Controls.Add(llbCombat);
             Controls.Add(label5);
             Controls.Add(button1);
@@ -229,5 +241,6 @@
         private Button button1;
         private Label label5;
         private Label llbCombat;
+        private Button debutton4;
     }
 }
