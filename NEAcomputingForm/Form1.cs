@@ -365,7 +365,10 @@ namespace NEAcomputingForm
                     conciousSpecialists.Add(team.GetSquad()[i]);
                 }
             }
+
             combatTurn = new CombatMenu("Player Combat Turn", "MEL");
+
+            
             combatTurn.setCurrentSpecialist(conciousSpecialists[0]);
             combatTurn.createCombatOptions(combatTurn.getCurrentSpecialist());
             combatTurn.setListSpecialists(conciousSpecialists);
@@ -381,7 +384,7 @@ namespace NEAcomputingForm
                 Output(count + ":" + option.getOptionName());
                 count++;
             }
-
+            optionsOnDisplay = true;
         }
         private void playerTurnInput(int buttonNumber)//allows the player to choose their input but only on their turn
         {
@@ -390,12 +393,16 @@ namespace NEAcomputingForm
                 if (buttonNumber == 0)
                 {
                     combatTurn.selectNextSpecialist();
+                    optionsOnDisplay = false;
                     playerCombatTurn();
                 }
                 int count = 1;
                 foreach (CombatOption option in combatTurn.GetCombatOptions())
                 {
-                    if (buttonNumber == count) { DoOption(option); playerTurn = false; optionsOnDisplay = true; }
+                    if (buttonNumber == count) 
+                    { 
+                        DoOption(option); 
+                    }
                     count++;
                 }
             }
@@ -423,12 +430,12 @@ namespace NEAcomputingForm
 
                 }
 
-
+                enemyTurn = false;
+                playerTurn = true;
+                optionsOnDisplay = false;
 
             }
-            enemyTurn = false;
-            playerTurnNext = true;
-            optionsOnDisplay = false;
+            
 
         }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
@@ -457,6 +464,8 @@ namespace NEAcomputingForm
 
 
             }
+            playerTurn = false;
+            enemyTurn = true;
         }
 
         private void CombatTick()
@@ -465,16 +474,16 @@ namespace NEAcomputingForm
             if (startingCombat)
             {
                 currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
-
+                startingCombat = false;
             }
-            startingCombat = false;
+            
             bool NoTurnOccuring = !(playerTurn || enemyTurn);
 
             if (checkIfPlayerLost())
             {
                 inCombat = false;
                 playerTurn = false;
-                playerTurnNext = false;
+                enemyTurn=false;
                 llbCombat.Text = "No";
                 Output("Player lost");
             } // checks to see if the player has lost
@@ -482,32 +491,11 @@ namespace NEAcomputingForm
             {
                 inCombat = false;
                 playerTurn = false;
-                playerTurnNext = false;
+                enemyTurn = false;
                 llbCombat.Text = "No";
                 Output("Player win");
             } //checks to see if the player has won
 
-            if (NoTurnOccuring && playerTurnNext)
-            {
-                enemyTurn = false;
-                playerTurnNext = false;
-                playerTurn = true;
-                optionsOnDisplay = false;
-                Output("Player turn currently");
-                
-
-            }//lets the player have their turn 
-           
-            
-            if (NoTurnOccuring && !playerTurnNext)
-            {
-                enemyTurn = true;
-                playerTurnNext = true;
-                playerTurn = false;
-                optionsOnDisplay = true;
-                Output("Enemy turn now");
-
-            }//lets the enemy have their turn
             if (playerTurn && !optionsOnDisplay)
             {
                 Output("Player turn debug output");
@@ -517,7 +505,7 @@ namespace NEAcomputingForm
 
             if (optionsOnDisplay && !playerTurn)
             {
-                Output("Enemy turn yay");
+                Output("Enemy turn");
                 enemyCombatTurn();
             }
 
@@ -540,7 +528,7 @@ namespace NEAcomputingForm
             {
                 if (!specialist.isConcious()) { count++; }
             }
-            if (count == (team.GetSquad().Count+1)) { return true; }
+            if (count == (team.GetSquad().Count)) { return true; }
 
             return false;
         }
@@ -805,7 +793,7 @@ namespace NEAcomputingForm
             if (amountDamaged < 0) amountDamaged = 0;
             this.currentHealth -= amountDamaged;
 
-            if (this.currentHealth >= 0) { this.conscious = false; }
+            if (this.currentHealth <= 0) { this.conscious = false; }
 
         }
 
@@ -1125,11 +1113,11 @@ namespace NEAcomputingForm
 
     /* 
      To do list:                                priority (lower higher priority)
-    Finish combat system                           1
+    
     Convert Debug buttons into a dev menu          5
     Create save/ load system for players           1
     Fill out files                                 5
     Polish stuff                                   9
-     
+    Menus                                          8
      */
 }
