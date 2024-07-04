@@ -13,20 +13,28 @@ namespace NEAcomputingForm
         string gamestate = "Loading";// a string that can be accessed anywhere in form 1
         MenuNavigation CurrentMenu = new MenuNavigation("Loading", "0");//creates the most basic menu to let the player know the game is loading and also sets the menu that can be accessed from anywhere in form 1
         List<MenuNavigation> menuList = new List<MenuNavigation>();// a list of menus that can be accessed from anywhere in form 1
-        bool inCombat = false;
+
         Squad team = new Squad("My Team");//same as above but with a squad (default name is My Team
         SecretBase Secretbase = new SecretBase();//same as above but with a secretbase
         WeaponShop weaponshop = new WeaponShop();//...weaponshop
         List<Levelset> levels = new List<Levelset>();//a list to contain all the levels ( can be accessed from anywhere in form 1)
         DatabaseConnector databaseConnector = new DatabaseConnector();// a database connector (it does what it says on the tin {it allows connection to a database})
         NumpadButtons form2;
+        DebugMenu debug;
         CombatMenu combatTurn;
-        bool playerTurn = false;
-        bool playerTurnNext = false;
-        bool enemyTurn = false;
         Level currentlevel;
+
+        //all of the boollean values that make combat work
+        bool inCombat = false;
+        bool playerTurn = false;
+        bool enemyTurn = false;
         bool startingCombat = false;
         bool optionsOnDisplay = false;
+        bool playerTurnNext = false;
+
+
+
+
         public Form1()
         {
             InitializeComponent();
@@ -52,6 +60,39 @@ namespace NEAcomputingForm
             {
                 playerTurnInput(buttonNumber);
             }
+        }
+
+        public void DebugMenuAccess(int buttonNumber)
+        {
+            if (buttonNumber == 0) { txtOut.Clear(); }
+            if (buttonNumber == 1) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); }
+            if (buttonNumber == 2)
+            {
+                Output(CurrentMenu.GetMenuName());
+                Output(CurrentMenu.GetMenuNumber().ToString());
+                DisplayCurrentMenu();
+                Output("ShopInventory:");
+                foreach (Weapon weapon in weaponshop.getShopInventory())
+                {
+                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+                }
+                Output("UnlockedWeapons");
+                foreach (Weapon weapon in Secretbase.GetWeapons())
+                {
+                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+                }
+            }
+            if (buttonNumber == 3) { form2 = new NumpadButtons(); form2.Show(); }
+            if (buttonNumber == 4) { debug = new DebugMenu(); debug.Show(); }
+            if (buttonNumber == 5)
+            {
+                inCombat = true;
+                playerTurnNext = true;
+                playerTurn = true;
+                startingCombat = true;
+            }
+            if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
+            if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
         }
         private void Runtime2_Tick(object sender, EventArgs e)
         {
@@ -110,7 +151,7 @@ namespace NEAcomputingForm
         private void buttonClear_Click(object sender, EventArgs e) //clears the output
         {
             txtOut.Clear();
-            team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); //sets all of the weapons in the bad to the revolver
+            team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); //sets all of the weapons in the bad to the club
         }
         private void buttonContinue_Click(object sender, EventArgs e)
         {
@@ -145,11 +186,9 @@ namespace NEAcomputingForm
         private void Form1_Load(object sender, EventArgs e) //this is called when form1 initially loads in
         {
             menuList.Add(CurrentMenu);
-
+            debug = new DebugMenu();
             form2 = new NumpadButtons();
-
             form2.Show();//Makes the numpad visible
-            //Output("Hello");
             LoadThingsIn();
             CurrentMenu.SetMenuList(menuList);
 
@@ -270,8 +309,8 @@ namespace NEAcomputingForm
                     Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim,weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
                 }*/
-                //the above bit is commented out beause it not run
-                //(DEBUG)
+
+                //(DEBUG) due to the above bit not running this allows me to debug the combat system until I get it working
                 int enemyID = 0;
                 string enemyName = "Test4";
                 string enemyWeapon = "Handgun";
@@ -281,6 +320,7 @@ namespace NEAcomputingForm
                 Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);
                 templv[0].AddEnemy(tempE);
                 //(END DEBUG)
+
                 Levelset levelset = new Levelset(levelSetNum + 1);
                 for (int i = 0; i < 5; i++)
                 {
@@ -354,7 +394,7 @@ namespace NEAcomputingForm
         //Here are all of the subroutines which handle combat
         private void playerCombatTurn() // the display side of the player turn
         {
-            
+
             playerTurnNext = false;
             int numOfSpecialists = team.GetSquad().Count;
             List<Specialist> conciousSpecialists = new List<Specialist>();
@@ -368,7 +408,7 @@ namespace NEAcomputingForm
 
             combatTurn = new CombatMenu("Player Combat Turn", "MEL");
 
-            
+
             combatTurn.setCurrentSpecialist(conciousSpecialists[0]);
             combatTurn.createCombatOptions(combatTurn.getCurrentSpecialist());
             combatTurn.setListSpecialists(conciousSpecialists);
@@ -399,14 +439,14 @@ namespace NEAcomputingForm
                 int count = 1;
                 foreach (CombatOption option in combatTurn.GetCombatOptions())
                 {
-                    if (buttonNumber == count) 
-                    { 
-                        DoOption(option); 
+                    if (buttonNumber == count)
+                    {
+                        DoOption(option);
                     }
                     count++;
                 }
             }
-            
+
         }
 
         private void enemyCombatTurn()
@@ -435,12 +475,23 @@ namespace NEAcomputingForm
                 optionsOnDisplay = false;
 
             }
-            
+
 
         }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
         {
             bool optionDone = false;
+            if (option.getOptionDamage1() < 0)
+            {
+                inCombat = false;
+                optionDone = true;
+                playerTurn = false;
+                enemyTurn = false;
+                playerTurnNext = false;
+                llbCombat.Text = "False";
+                Output("Leaving combat");
+
+            }
             for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
             {
                 if (!optionDone)
@@ -476,14 +527,14 @@ namespace NEAcomputingForm
                 currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
                 startingCombat = false;
             }
-            
+
             bool NoTurnOccuring = !(playerTurn || enemyTurn);
 
             if (checkIfPlayerLost())
             {
                 inCombat = false;
                 playerTurn = false;
-                enemyTurn=false;
+                enemyTurn = false;
                 llbCombat.Text = "No";
                 Output("Player lost");
             } // checks to see if the player has lost
@@ -496,14 +547,14 @@ namespace NEAcomputingForm
                 Output("Player win");
             } //checks to see if the player has won
 
-            if (playerTurn && !optionsOnDisplay)
+            if (playerTurn && !optionsOnDisplay && inCombat)
             {
                 Output("Player turn debug output");
                 playerCombatTurn();
 
             } //allows the player to actually input and displays options
 
-            if (optionsOnDisplay && !playerTurn)
+            if (optionsOnDisplay && !playerTurn && inCombat)
             {
                 Output("Enemy turn");
                 enemyCombatTurn();
@@ -535,7 +586,12 @@ namespace NEAcomputingForm
 
         private void debutton4_Click(object sender, EventArgs e)
         {
-            team.GetSquad()[0].Heal(999999999,true);
+            team.GetSquad()[0].Heal(999999999, true);
+        }
+
+        private void btnOpenDebug_Click(object sender, EventArgs e)
+        {
+            debug.Show();
         }
     }
 

@@ -30,8 +30,6 @@
         {
             components = new System.ComponentModel.Container();
             txtOut = new RichTextBox();
-            buttonContinue = new Button();
-            buttonClear = new Button();
             Runtime = new System.Windows.Forms.Timer(components);
             labelTime = new Label();
             Runtime2 = new System.Windows.Forms.Timer(components);
@@ -41,10 +39,9 @@
             label3 = new Label();
             txtCurrentInput = new TextBox();
             label4 = new Label();
-            button1 = new Button();
             label5 = new Label();
             llbCombat = new Label();
-            debutton4 = new Button();
+            btnOpenDebug = new Button();
             SuspendLayout();
             // 
             // txtOut
@@ -53,31 +50,9 @@
             txtOut.Location = new Point(82, 85);
             txtOut.Name = "txtOut";
             txtOut.ReadOnly = true;
-            txtOut.Size = new Size(519, 196);
+            txtOut.Size = new Size(624, 243);
             txtOut.TabIndex = 1;
             txtOut.Text = "";
-            // 
-            // buttonContinue
-            // 
-            buttonContinue.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            buttonContinue.Location = new Point(482, 367);
-            buttonContinue.Name = "buttonContinue";
-            buttonContinue.Size = new Size(218, 33);
-            buttonContinue.TabIndex = 12;
-            buttonContinue.Text = "Debug button 2";
-            buttonContinue.UseVisualStyleBackColor = true;
-            buttonContinue.Click += buttonContinue_Click;
-            // 
-            // buttonClear
-            // 
-            buttonClear.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            buttonClear.Location = new Point(482, 313);
-            buttonClear.Name = "buttonClear";
-            buttonClear.Size = new Size(218, 33);
-            buttonClear.TabIndex = 13;
-            buttonClear.Text = "Debug button 1";
-            buttonClear.UseVisualStyleBackColor = true;
-            buttonClear.Click += buttonClear_Click;
             // 
             // Runtime
             // 
@@ -147,7 +122,7 @@
             txtCurrentInput.Location = new Point(607, 55);
             txtCurrentInput.Name = "txtCurrentInput";
             txtCurrentInput.ReadOnly = true;
-            txtCurrentInput.Size = new Size(93, 23);
+            txtCurrentInput.Size = new Size(99, 23);
             txtCurrentInput.TabIndex = 19;
             // 
             // label4
@@ -159,16 +134,6 @@
             label4.Size = new Size(81, 15);
             label4.TabIndex = 20;
             label4.Text = "Current Input:";
-            // 
-            // button1
-            // 
-            button1.Location = new Point(284, 313);
-            button1.Name = "button1";
-            button1.Size = new Size(159, 64);
-            button1.TabIndex = 21;
-            button1.Text = "Debug button 3 (enter combat test)";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // label5
             // 
@@ -188,25 +153,24 @@
             llbCombat.TabIndex = 23;
             llbCombat.Text = "flase";
             // 
-            // debutton4
+            // btnOpenDebug
             // 
-            debutton4.Location = new Point(652, 260);
-            debutton4.Name = "debutton4";
-            debutton4.Size = new Size(75, 23);
-            debutton4.TabIndex = 24;
-            debutton4.Text = "Debug 4";
-            debutton4.UseVisualStyleBackColor = true;
-            debutton4.Click += debutton4_Click;
+            btnOpenDebug.Location = new Point(1029, 335);
+            btnOpenDebug.Name = "btnOpenDebug";
+            btnOpenDebug.Size = new Size(133, 23);
+            btnOpenDebug.TabIndex = 24;
+            btnOpenDebug.Text = "Open Debug Menu";
+            btnOpenDebug.UseVisualStyleBackColor = true;
+            btnOpenDebug.Click += btnOpenDebug_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(debutton4);
+            ClientSize = new Size(806, 450);
+            Controls.Add(btnOpenDebug);
             Controls.Add(llbCombat);
             Controls.Add(label5);
-            Controls.Add(button1);
             Controls.Add(label4);
             Controls.Add(txtCurrentInput);
             Controls.Add(label3);
@@ -214,8 +178,6 @@
             Controls.Add(label1);
             Controls.Add(labelGamestate);
             Controls.Add(labelTime);
-            Controls.Add(buttonClear);
-            Controls.Add(buttonContinue);
             Controls.Add(txtOut);
             Name = "Form1";
             Text = "Form1";
@@ -227,8 +189,6 @@
         #endregion
 
         private RichTextBox txtOut;
-        private Button buttonContinue;
-        private Button buttonClear;
         private System.Windows.Forms.Timer Runtime;
         private Label labelTime;
         private System.Windows.Forms.Timer Runtime2;
@@ -238,9 +198,8 @@
         private Label label3;
         private TextBox txtCurrentInput;
         private Label label4;
-        private Button button1;
         private Label label5;
         private Label llbCombat;
-        private Button debutton4;
+        private Button btnOpenDebug;
     }
 }
