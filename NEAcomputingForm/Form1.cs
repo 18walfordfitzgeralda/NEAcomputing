@@ -1,8 +1,9 @@
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Data;
 using System.Data.OleDb;
 using System.Xml;
-
+using Newtonsoft.Json;
 namespace NEAcomputingForm
 {
 
@@ -93,6 +94,13 @@ namespace NEAcomputingForm
             }
             if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
             if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
+            if (buttonNumber == 8) 
+            {
+
+                SaveLoad temp = new SaveLoad();
+                temp.saveName = "Test";
+                SaveProgress(temp); 
+            }
         }
         private void Runtime2_Tick(object sender, EventArgs e)
         {
@@ -359,6 +367,24 @@ namespace NEAcomputingForm
 
         }
 
+        private void SaveProgress(SaveLoad temp) 
+        {
+            string filename = temp.saveName + ".json";
+            if (!File.Exists(@"SaveFolder\" + filename))
+            {
+                File.Create(@"SaveFolder\" + filename);
+            }
+            
+            string file = JsonConvert.SerializeObject(temp);
+            File.WriteAllText(@"SaveFolder\" + filename, file);
+            /*using (StreamWriter Fred = new StreamWriter(@"SaveFolder\"+filename)) 
+            {
+                Fred.WriteLine("Debug");
+            
+            }*/
+                Output(file);
+        
+        }
         private void LoadProgress(string documentName) //when it is done it should load the progress from a document
         {
             try
@@ -1166,6 +1192,17 @@ namespace NEAcomputingForm
     }
 
 
+    class SaveLoad 
+    {
+        public string saveName;
+    
+    
+    
+    
+    
+    
+    }
+
 
     /* 
      To do list:                                priority (lower higher priority)
@@ -1175,5 +1212,6 @@ namespace NEAcomputingForm
     Fill out files                                 5
     Polish stuff                                   9
     Menus                                          8
+    Fix database                                   3
      */
 }

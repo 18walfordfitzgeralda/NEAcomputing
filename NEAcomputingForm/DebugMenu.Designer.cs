@@ -38,6 +38,7 @@
             btnStab = new Button();
             lblCombatDebug = new Label();
             lblOpenDebug = new Label();
+            btnTestSave = new Button();
             SuspendLayout();
             // 
             // btnClr
@@ -140,11 +141,22 @@
             lblOpenDebug.TabIndex = 9;
             lblOpenDebug.Text = "Open Debug";
             // 
+            // btnTestSave
+            // 
+            btnTestSave.Location = new Point(690, 58);
+            btnTestSave.Name = "btnTestSave";
+            btnTestSave.Size = new Size(75, 23);
+            btnTestSave.TabIndex = 10;
+            btnTestSave.Text = "Test Save";
+            btnTestSave.UseVisualStyleBackColor = true;
+            btnTestSave.Click += btnTestSave_Click;
+            // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnTestSave);
             Controls.Add(lblOpenDebug);
             Controls.Add(lblCombatDebug);
             Controls.Add(btnStab);
@@ -174,5 +186,6 @@
         private Button btnStab;
         private Label lblCombatDebug;
         private Label lblOpenDebug;
+        private Button btnTestSave;
     }
 }

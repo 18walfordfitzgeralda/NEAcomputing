@@ -63,5 +63,10 @@ namespace NEAcomputingForm
         {
             form1.DebugMenuAccess(7);
         }
+
+        private void btnTestSave_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(8);
+        }
     }
 }
