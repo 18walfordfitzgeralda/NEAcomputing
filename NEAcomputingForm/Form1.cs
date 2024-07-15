@@ -96,9 +96,7 @@ namespace NEAcomputingForm
             if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
             if (buttonNumber == 8) 
             {
-
-                SaveLoad temp = new SaveLoad();
-                temp.saveName = "Test";
+                var temp = createSaveLoadFile();
                 SaveProgress(temp); 
             }
         }
@@ -301,6 +299,7 @@ namespace NEAcomputingForm
                 for (int i = 0; i < 5; i++)
                 {
                     templv[i] = new Level(i + 1, levelSetNum + 1);//adds all of the levels to templv
+                    templv[i].levelID = Convert.ToChar(i + 65) +""+ Convert.ToChar(levelSetNum+65);
                 }
                 /*
                 foreach (DataRow row in database.Tables[0].Rows)//iterates through all of the rows in the database (I only call upon one table)
@@ -367,21 +366,78 @@ namespace NEAcomputingForm
 
         }
 
+
+        private SaveLoad createSaveLoadFile() 
+        {
+            SaveLoad saveLoad = new SaveLoad();
+
+            saveLoad.saveName = team.getName();
+
+            List<string> unlockedWeapons = new List<string>();
+            foreach (Weapon weapon in Secretbase.GetWeapons())
+            {
+                unlockedWeapons.Add(weapon.getName());
+            }
+            saveLoad.unlockedWeapons = unlockedWeapons;
+            
+            List<string> unlockedLevels = new List<string>();
+            foreach (Levelset levelset in levels) 
+            {
+                foreach (Level level in levelset.GetLevels()) 
+                {
+                    if (level.unlocked) 
+                    {
+                        unlockedLevels.Add(level.levelID);
+                    }
+                }
+            }
+            saveLoad.unlockedLevels = unlockedLevels;
+
+            List<string> specialistNames = new List<string>(); 
+            List<int> strengths = new List<int>();
+            List<int> perceptions = new List<int>();
+            List<int> Endurances = new List<int>();
+            List<int> Intelligences = new List<int>();
+            List<int> Agilities = new List<int>();
+            List<int> Lucks = new List<int>();
+
+            foreach (Specialist specialist in team.GetSquad()) 
+            { 
+                specialistNames.Add(specialist.getName());
+                strengths.Add(specialist.GetStrength());
+                perceptions.Add(specialist.GetPerception());
+                Endurances.Add(specialist.GetEndurance());
+                Intelligences.Add(specialist.GetIntelligence());
+                Agilities.Add(specialist.GetAgility());
+                Lucks.Add(specialist.GetLuck());
+            }
+            saveLoad.specialistNames = specialistNames;
+            saveLoad.specialistStrengths = strengths;
+            saveLoad.specialistPerceptions = perceptions;
+            saveLoad.specialistEndurances = Endurances;
+            saveLoad.specialistIntelligences = Intelligences;
+            saveLoad.specialistAgilities = Agilities;
+            saveLoad.specialistLucks = Lucks;
+
+            return saveLoad;
+        }
         private void SaveProgress(SaveLoad temp) 
         {
             string filename = temp.saveName + ".json";
             if (!File.Exists(@"SaveFolder\" + filename))
             {
-                File.Create(@"SaveFolder\" + filename);
+                var tempfile = File.Create(@"SaveFolder\" + filename);
+                tempfile.Close();
+                Output("File created");
             }
-            
+            Output("Saving file");
             string file = JsonConvert.SerializeObject(temp);
-            File.WriteAllText(@"SaveFolder\" + filename, file);
-            /*using (StreamWriter Fred = new StreamWriter(@"SaveFolder\"+filename)) 
+            //File.WriteAllText(@"SaveFolder\" + filename, file);
+            using (StreamWriter Fred = new StreamWriter(@"SaveFolder\"+filename)) 
             {
-                Fred.WriteLine("Debug");
+                Fred.Write(file);
             
-            }*/
+            }
                 Output(file);
         
         }
@@ -672,6 +728,7 @@ namespace NEAcomputingForm
         {
             this.name = name;
         }
+        public string getName() { return this.name; }
         public void AddToSquad(Specialist temp)
         {
             this.party.Add(temp);//adds the specialist to the squad
@@ -1003,9 +1060,11 @@ namespace NEAcomputingForm
     }
     class Level //template for levels 
     {
+        public string levelID;
         List<Enemy> enemyList = new List<Enemy>();//each of the levels has a list of enemies that must be defeated
         int levelNum;
         int levelSetNum;
+        public bool unlocked=false;
         public Level(int levelNum, int levelSetNum)
         {
             this.levelNum = levelNum;
@@ -1195,12 +1254,15 @@ namespace NEAcomputingForm
     class SaveLoad 
     {
         public string saveName;
-    
-    
-    
-    
-    
-    
+        public List<string> unlockedWeapons;
+        public List<string> specialistNames;
+        public List<string> unlockedLevels;
+        public List<int> specialistStrengths;
+        public List<int> specialistPerceptions;
+        public List<int> specialistEndurances;
+        public List<int> specialistIntelligences;
+        public List<int> specialistAgilities;
+        public List<int> specialistLucks;
     }
 
 
