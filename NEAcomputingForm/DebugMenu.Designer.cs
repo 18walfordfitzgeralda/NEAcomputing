@@ -39,13 +39,18 @@
             lblCombatDebug = new Label();
             lblOpenDebug = new Label();
             btnTestSave = new Button();
+            btnTestLoad = new Button();
+            btnChangeSquadName = new Button();
+            txtDebugInput = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
             SuspendLayout();
             // 
             // btnClr
             // 
-            btnClr.Location = new Point(680, 29);
+            btnClr.Location = new Point(2, 114);
             btnClr.Name = "btnClr";
-            btnClr.Size = new Size(108, 23);
+            btnClr.Size = new Size(146, 23);
             btnClr.TabIndex = 0;
             btnClr.Text = "Clear Output Box";
             btnClr.UseVisualStyleBackColor = true;
@@ -53,9 +58,9 @@
             // 
             // btnClub
             // 
-            btnClub.Location = new Point(176, 29);
+            btnClub.Location = new Point(154, 29);
             btnClub.Name = "btnClub";
-            btnClub.Size = new Size(146, 23);
+            btnClub.Size = new Size(193, 23);
             btnClub.TabIndex = 1;
             btnClub.Text = "Set all weapons to club";
             btnClub.UseVisualStyleBackColor = true;
@@ -93,9 +98,9 @@
             // 
             // btnCombat
             // 
-            btnCombat.Location = new Point(176, 85);
+            btnCombat.Location = new Point(154, 114);
             btnCombat.Name = "btnCombat";
-            btnCombat.Size = new Size(146, 23);
+            btnCombat.Size = new Size(193, 23);
             btnCombat.TabIndex = 5;
             btnCombat.Text = "Put into debug combat";
             btnCombat.UseVisualStyleBackColor = true;
@@ -103,7 +108,7 @@
             // 
             // btnMegaHeal
             // 
-            btnMegaHeal.Location = new Point(151, 114);
+            btnMegaHeal.Location = new Point(154, 85);
             btnMegaHeal.Name = "btnMegaHeal";
             btnMegaHeal.Size = new Size(193, 23);
             btnMegaHeal.TabIndex = 6;
@@ -113,9 +118,9 @@
             // 
             // btnStab
             // 
-            btnStab.Location = new Point(176, 56);
+            btnStab.Location = new Point(154, 56);
             btnStab.Name = "btnStab";
-            btnStab.Size = new Size(146, 23);
+            btnStab.Size = new Size(193, 23);
             btnStab.TabIndex = 7;
             btnStab.Text = "Set all weapons to Knife";
             btnStab.UseVisualStyleBackColor = true;
@@ -137,25 +142,78 @@
             lblOpenDebug.BorderStyle = BorderStyle.FixedSingle;
             lblOpenDebug.Location = new Point(35, 9);
             lblOpenDebug.Name = "lblOpenDebug";
-            lblOpenDebug.Size = new Size(76, 17);
+            lblOpenDebug.Size = new Size(79, 17);
             lblOpenDebug.TabIndex = 9;
-            lblOpenDebug.Text = "Open Debug";
+            lblOpenDebug.Text = "Debug Basics";
             // 
             // btnTestSave
             // 
-            btnTestSave.Location = new Point(690, 58);
+            btnTestSave.Location = new Point(353, 29);
             btnTestSave.Name = "btnTestSave";
-            btnTestSave.Size = new Size(75, 23);
+            btnTestSave.Size = new Size(131, 23);
             btnTestSave.TabIndex = 10;
             btnTestSave.Text = "Test Save";
             btnTestSave.UseVisualStyleBackColor = true;
             btnTestSave.Click += btnTestSave_Click;
+            // 
+            // btnTestLoad
+            // 
+            btnTestLoad.Location = new Point(353, 85);
+            btnTestLoad.Name = "btnTestLoad";
+            btnTestLoad.Size = new Size(131, 23);
+            btnTestLoad.TabIndex = 11;
+            btnTestLoad.Text = "Test Load";
+            btnTestLoad.UseVisualStyleBackColor = true;
+            btnTestLoad.Click += button1_Click;
+            // 
+            // btnChangeSquadName
+            // 
+            btnChangeSquadName.Location = new Point(353, 56);
+            btnChangeSquadName.Name = "btnChangeSquadName";
+            btnChangeSquadName.Size = new Size(131, 23);
+            btnChangeSquadName.TabIndex = 12;
+            btnChangeSquadName.Text = "Change Squad Name";
+            btnChangeSquadName.UseVisualStyleBackColor = true;
+            btnChangeSquadName.Click += btnChangeSquadName_Click;
+            // 
+            // txtDebugInput
+            // 
+            txtDebugInput.Location = new Point(12, 172);
+            txtDebugInput.Name = "txtDebugInput";
+            txtDebugInput.Size = new Size(292, 23);
+            txtDebugInput.TabIndex = 13;
+            txtDebugInput.TextChanged += txtDebugInput_TextChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.BorderStyle = BorderStyle.FixedSingle;
+            label1.Location = new Point(12, 152);
+            label1.Name = "label1";
+            label1.Size = new Size(292, 17);
+            label1.TabIndex = 14;
+            label1.Text = "Enter the string for the thing you want to change here";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.BorderStyle = BorderStyle.FixedSingle;
+            label2.Location = new Point(366, 9);
+            label2.Name = "label2";
+            label2.Size = new Size(100, 17);
+            label2.TabIndex = 15;
+            label2.Text = "Save Load Debug";
             // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(txtDebugInput);
+            Controls.Add(btnChangeSquadName);
+            Controls.Add(btnTestLoad);
             Controls.Add(btnTestSave);
             Controls.Add(lblOpenDebug);
             Controls.Add(lblCombatDebug);
@@ -187,5 +245,10 @@
         private Label lblCombatDebug;
         private Label lblOpenDebug;
         private Button btnTestSave;
+        private Button btnTestLoad;
+        private Button btnChangeSquadName;
+        private TextBox txtDebugInput;
+        private Label label1;
+        private Label label2;
     }
 }

@@ -32,7 +32,7 @@ namespace NEAcomputingForm
         bool startingCombat = false;
         bool optionsOnDisplay = false;
         bool playerTurnNext = false;
-
+        public string debugStringAccess = "";
 
 
 
@@ -98,6 +98,14 @@ namespace NEAcomputingForm
             {
                 var temp = createSaveLoadFile();
                 SaveProgress(temp); 
+            }
+            if (buttonNumber==9) 
+            {
+                LoadProgress(team.getName()+".json");
+            }
+            if (buttonNumber == 10)
+            {
+                team.changeName(debugStringAccess);
             }
         }
         private void Runtime2_Tick(object sender, EventArgs e)
@@ -441,24 +449,47 @@ namespace NEAcomputingForm
                 Output(file);
         
         }
-        private void LoadProgress(string documentName) //when it is done it should load the progress from a document
+        private void LoadProgress(string documentName) //when it is done it should load the progress from a json file
         {
             try
             {
-                string line;
-
-                using (StreamReader sr = new StreamReader(documentName))
+                string file =  File.ReadAllText(@"SaveFolder\" + documentName);
+                SaveLoad temp = new SaveLoad();
+                temp = JsonConvert.DeserializeObject<SaveLoad>(file);
+                int i =0;
+                team = new Squad(temp.saveName);
+                foreach (string name in temp.specialistNames) 
                 {
-                    line = sr.ReadLine();
-                    while (line != null)
-                    {
-                        //here it will put the data into the correct class
-
-
-                        line = sr.ReadLine();
-                    }
-
+                    Specialist specialist = new Specialist(name);
+                    specialist.SetStrength(temp.specialistStrengths[i]);
+                    specialist.SetPerception(temp.specialistPerceptions[i]);
+                    specialist.SetEndurance(temp.specialistEndurances[i]);
+                    specialist.SetIntelligence(temp.specialistIntelligences[i]);
+                    specialist.SetAgility(temp.specialistAgilities[i]);
+                    specialist.SetLuck(temp.specialistLucks[i]);
+                    i++;
+                    team.AddToSquad(specialist);
                 }
+                foreach (Levelset levelset in levels) 
+                {
+                    foreach (Level level in levelset.GetLevels()) 
+                    { 
+                        level.unlocked = false;
+                        if (temp.unlockedLevels.Contains(level.levelID)) 
+                        {
+                            level.unlocked = true;
+                        }
+                    }                         
+                }
+                foreach (Weapon weapon in weaponshop.getShopInventory()) 
+                {
+                    if (temp.unlockedWeapons.Contains(weapon.getName()))
+                    {
+                        weapon.setOwned();
+                    }
+                    else { weapon.setUnowned(); }
+                }
+                
             }
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
         }
@@ -729,6 +760,7 @@ namespace NEAcomputingForm
             this.name = name;
         }
         public string getName() { return this.name; }
+        public void changeName(string newName) { this.name = newName; }
         public void AddToSquad(Specialist temp)
         {
             this.party.Add(temp);//adds the specialist to the squad
@@ -832,7 +864,7 @@ namespace NEAcomputingForm
             return this.owned;
         }
         public void setOwned() { this.owned = true; }
-
+        public void setUnowned() { this.owned = false; }
 
     }
     class WeaponShop // used to make the list of weapons in the shop global without having a list which can easily be messed up by mistake 
@@ -1190,8 +1222,14 @@ namespace NEAcomputingForm
         {
             Weapon[] bag = person.GetWeaponBag();
             this.options = new List<CombatOption>();
+            for (int i =0;i<bag.Length;i++) 
+            { 
+                if (bag[i] ==null) { bag[i]= new Weapon("None","None","None",0,0,1,0); }
+            }
+            
             foreach (Weapon weapon in bag)
             {
+                
                 string optionName = weapon.getName();
                 string DmgType1 = weapon.getDamageType1();
                 string DmgType2 = weapon.getDamageType2();

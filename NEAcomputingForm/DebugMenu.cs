@@ -68,5 +68,21 @@ namespace NEAcomputingForm
         {
             form1.DebugMenuAccess(8);
         }
+
+        private void button1_Click(object sender, EventArgs e) //this is the test form load button
+        {
+            form1.DebugMenuAccess(9);
+        }
+
+        private void btnChangeSquadName_Click(object sender, EventArgs e)
+        {
+            form1.debugStringAccess = txtDebugInput.Text;
+            form1.DebugMenuAccess(10);
+        }
+
+        private void txtDebugInput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
