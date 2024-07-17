@@ -24,7 +24,9 @@ namespace NEAcomputingForm
         DebugMenu debug;
         CombatMenu combatTurn;
         Level currentlevel;
-
+        Specialist currentSpecialist;
+        int selectedLevelset = 0;
+        int selectedLevel = 0;
         //all of the boollean values that make combat work
         bool inCombat = false;
         bool playerTurn = false;
@@ -51,9 +53,17 @@ namespace NEAcomputingForm
                 }
                 else
                 {
-                    //Output("Problem? input was" + buttonNumber + " which is option " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[buttonNumber]);
+                    
                     string[] nextMenuNumbersTemp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo();
-                    LoadNextMenu(nextMenuNumbersTemp[buttonNumber]);
+                    try 
+                    {
+                        int i = Convert.ToInt32(nextMenuNumbersTemp[buttonNumber]);
+                        LoadNextMenu(i.ToString()); 
+                    } catch 
+                    {
+                        handleThings(nextMenuNumbersTemp[buttonNumber]);
+                    }
+                    
 
                 }
             }
@@ -502,7 +512,118 @@ namespace NEAcomputingForm
             startingCombat = true;
         }
 
+        private void handleThings(string input) 
+        {
+            switch (input)
+            {
+                case "Previous Specialist":
+                    specialistMenuHandle(0); break;
+                case "Next Specialist":
+                    specialistMenuHandle(1); break;
+                case "Train":
+                    specialistMenuHandle(2); break;
+                case "Strength":
+                    specialistMenuHandle(3); break;
+                case "Perception":
+                    specialistMenuHandle(4); break;
+                case "Endurance":
+                    specialistMenuHandle(5); break;
+                case "Intelligence":
+                    specialistMenuHandle(6); break;
+                case "Agility":
+                    specialistMenuHandle(7); break;
+                case "Luck":
+                    specialistMenuHandle(8); break;
+                case "Cancel":
+                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); break;
+                case "Levelset1":
+                    selectedLevelset = 1; break;
+                case "Levelset2":
+                    selectedLevelset = 2; break;
+                case "Levelset3":
+                    selectedLevelset = 3; break;
+                case "Levelset4":
+                    selectedLevelset = 4; break;
+                case "Levelset5":
+                    selectedLevelset = 5; break;
+                case "Levelset6":
+                    selectedLevelset = 6; break;
+                case "Levelset7":
+                    selectedLevelset = 7; break;
+                case "Levelset8":
+                    selectedLevelset = 8; break;
+                case "Levelset9":
+                    selectedLevelset = 9; break;
+                case "Level1":
+                    selectedLevel = 1; break;
+                case "Level2":
+                    selectedLevel = 2; break;
+                case "Level3":
+                    selectedLevel = 3; break;
+                case "Level4":
+                    selectedLevel = 4; break;
+                case "Level5":
+                    selectedLevel = 5; break;
+            }
+        }
+        private void specialistMenuHandle(int input) 
+        {
+            if (currentSpecialist==null) { currentSpecialist = team.GetSquad()[0]; }
+            if (input == 0)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                if ((i - 1) < 0) { i = team.GetSquad().Count() - 1; } else { i -= 1; }
+                currentSpecialist = team.GetSquad()[i];
+            }
+            else if (input == 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                if ((i + 1) >= team.GetSquad().Count()) { i = 0; } else { i += 1; }
+                currentSpecialist = team.GetSquad()[i];
+            }
+            else if (input == 2)
+            {
+                Output("You have" + Secretbase.getTrainingTokens() + "training tokens");
+                CurrentMenu = CurrentMenu.GoToNextMenu("6", CurrentMenu);
+            }
+            else if (input == 3 && Secretbase.getTrainingTokens() >= 1) 
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetStrength(team.GetSquad()[i].GetStrength()+10);
+                Secretbase.removeTrainingToken();
+            }
+            else if (input == 4 && Secretbase.getTrainingTokens() >= 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetPerception(team.GetSquad()[i].GetPerception() + 10);
+                Secretbase.removeTrainingToken();
+            }
+            else if (input == 5 && Secretbase.getTrainingTokens() >= 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetEndurance(team.GetSquad()[i].GetEndurance() + 10);
+                Secretbase.removeTrainingToken();
+            }
+            else if (input == 6 && Secretbase.getTrainingTokens() >= 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetIntelligence(team.GetSquad()[i].GetIntelligence() + 10);
+                Secretbase.removeTrainingToken();
+            }
+            else if (input == 7 && Secretbase.getTrainingTokens() >= 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetAgility(team.GetSquad()[i].GetAgility() + 10);
+                Secretbase.removeTrainingToken();
+            }
+            else if (input == 8 && Secretbase.getTrainingTokens() >= 1)
+            {
+                int i = team.GetSquad().IndexOf(currentSpecialist);
+                team.GetSquad()[i].SetLuck(team.GetSquad()[i].GetLuck() + 10);
+                Secretbase.removeTrainingToken();
+            }
 
+        }
 
         //Here are all of the subroutines which handle combat
         private void playerCombatTurn() // the display side of the player turn
@@ -793,6 +914,7 @@ namespace NEAcomputingForm
         {
             return this.trainingTokens;
         }
+        public void removeTrainingToken() { this.trainingTokens -= 1; }
         public int getEconomy()
         {
             return (this.economy);
@@ -1307,11 +1429,12 @@ namespace NEAcomputingForm
     /* 
      To do list:                                priority (lower higher priority)
     
-    Convert Debug buttons into a dev menu          5
-    Create save/ load system for players           1
+    Convert Debug buttons into a dev menu          7
     Fill out files                                 5
     Polish stuff                                   9
-    Menus                                          8
+    Menus                                          2
     Fix database                                   3
+    Level select logic and ui                      4
+    Enhance Save load system                       6
      */
 }
