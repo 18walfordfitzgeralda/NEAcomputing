@@ -117,6 +117,7 @@ namespace NEAcomputingForm
             {
                 team.changeName(debugStringAccess);
             }
+            if (buttonNumber==11) { Secretbase.addTrainingTokens(10); }
         }
         private void Runtime2_Tick(object sender, EventArgs e)
         {
@@ -535,7 +536,7 @@ namespace NEAcomputingForm
                 case "Luck":
                     specialistMenuHandle(8); break;
                 case "Cancel":
-                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); break;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); DisplayCurrentMenu(); break;
                 case "Levelset1":
                     selectedLevelset = 1; break;
                 case "Levelset2":
@@ -564,6 +565,8 @@ namespace NEAcomputingForm
                     selectedLevel = 4; break;
                 case "Level5":
                     selectedLevel = 5; break;
+                case "LevelSelect":
+                    levelSelect(); break;
             }
         }
         private void specialistMenuHandle(int input) 
@@ -624,11 +627,42 @@ namespace NEAcomputingForm
             }
 
         }
+        private void levelSelect() 
+        {
+            if (selectedLevelset == null)
+            {
+                CurrentMenu = CurrentMenu.GoToNextMenu("7", CurrentMenu);
+                DisplayCurrentMenu();
+                for (int i = 1; i < 10; i++)
+                {
+                    if (levels[i] == null) { }
+                    else
+                    {
+                        Output("Level set " + i + " name:" + levels[i].getName() + "Description" + levels[i].getDescription());
+                    }
+                }
+            }
+            else if (selectedLevel==null) 
+            {
+                CurrentMenu = CurrentMenu.GoToNextMenu("8", CurrentMenu);
+                DisplayCurrentMenu();
+                for (int i = 1; i < 10; i++)
+                {
+                    if (levels[selectedLevelset-1].GetLevels()[i] == null) { }
+                    else
+                    {
+                        Output("Level number:" + i  + " Unlocked: "+ levels[selectedLevelset - 1].GetLevels()[i].unlocked);
+                    }
+                }
+            }
+        
+        
+        }
 
         //Here are all of the subroutines which handle combat
         private void playerCombatTurn() // the display side of the player turn
         {
-
+ 
             playerTurnNext = false;
             int numOfSpecialists = team.GetSquad().Count;
             List<Specialist> conciousSpecialists = new List<Specialist>();
@@ -914,6 +948,7 @@ namespace NEAcomputingForm
         {
             return this.trainingTokens;
         }
+        public void addTrainingTokens(int num) { this.trainingTokens += num; }
         public void removeTrainingToken() { this.trainingTokens -= 1; }
         public int getEconomy()
         {
@@ -1248,6 +1283,8 @@ namespace NEAcomputingForm
         {
             this.Levels.Add(level);
         }
+        public string getName() { return this.setName; }
+        public string getDescription() { return this.description; }
         public List<Level> GetLevels() { return this.Levels; }
     }
 
@@ -1436,5 +1473,6 @@ namespace NEAcomputingForm
     Fix database                                   3
     Level select logic and ui                      4
     Enhance Save load system                       6
+    Add comments                                   10
      */
 }

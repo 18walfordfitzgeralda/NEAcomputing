@@ -84,5 +84,10 @@ namespace NEAcomputingForm
         {
 
         }
+
+        private void btnaddtokens_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(11);
+        }
     }
 }

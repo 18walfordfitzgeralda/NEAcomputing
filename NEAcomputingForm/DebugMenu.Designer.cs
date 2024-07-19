@@ -44,6 +44,7 @@
             txtDebugInput = new TextBox();
             label1 = new Label();
             label2 = new Label();
+            btnaddtokens = new Button();
             SuspendLayout();
             // 
             // btnClr
@@ -204,11 +205,22 @@
             label2.TabIndex = 15;
             label2.Text = "Save Load Debug";
             // 
+            // btnaddtokens
+            // 
+            btnaddtokens.Location = new Point(291, 234);
+            btnaddtokens.Name = "btnaddtokens";
+            btnaddtokens.Size = new Size(75, 23);
+            btnaddtokens.TabIndex = 16;
+            btnaddtokens.Text = "Add 10 training tokens";
+            btnaddtokens.UseVisualStyleBackColor = true;
+            btnaddtokens.Click += btnaddtokens_Click;
+            // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnaddtokens);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(txtDebugInput);
@@ -250,5 +262,6 @@
         private TextBox txtDebugInput;
         private Label label1;
         private Label label2;
+        private Button btnaddtokens;
     }
 }
