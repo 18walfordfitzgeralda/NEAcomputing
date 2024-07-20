@@ -9,25 +9,28 @@ namespace NEAcomputingForm
 
     public partial class Form1 : Form
     {
+        //defining the initial of all the variables accessible anywhere in form 1
 
-
-        string gamestate = "Loading";// a string that can be accessed anywhere in form 1
+            //all of the "global" variables using my own classes
         MenuNavigation CurrentMenu = new MenuNavigation("Loading", "0");//creates the most basic menu to let the player know the game is loading and also sets the menu that can be accessed from anywhere in form 1
         List<MenuNavigation> menuList = new List<MenuNavigation>();// a list of menus that can be accessed from anywhere in form 1
-
         Squad team = new Squad("My Team");//same as above but with a squad (default name is My Team
         SecretBase Secretbase = new SecretBase();//same as above but with a secretbase
         WeaponShop weaponshop = new WeaponShop();//...weaponshop
         List<Levelset> levels = new List<Levelset>();//a list to contain all the levels ( can be accessed from anywhere in form 1)
+        Level currentlevel;
+        Specialist currentSpecialist;
+
+            //all of the "global" varibles using standard or semistandard classes
         DatabaseConnector databaseConnector = new DatabaseConnector();// a database connector (it does what it says on the tin {it allows connection to a database})
         NumpadButtons form2;
         DebugMenu debug;
         CombatMenu combatTurn;
-        Level currentlevel;
-        Specialist currentSpecialist;
         int selectedLevelset = 0;
         int selectedLevel = 0;
-        //all of the boollean values that make combat work
+        string gamestate = "Loading";// a string that can be accessed anywhere in form 1
+
+            //all of the boollean values that make combat work
         bool inCombat = false;
         bool playerTurn = false;
         bool enemyTurn = false;
@@ -38,9 +41,66 @@ namespace NEAcomputingForm
 
 
 
-        public Form1()
+        
+        
+       //clocks timers and ticks
+        private void Runtime2_Tick(object sender, EventArgs e)
         {
-            InitializeComponent();
+            labelTime.Text = Convert.ToString(Convert.ToInt16(labelTime.Text) + 1);//increments the time by 1 every second
+        }
+        private void Runtime_Tick(object sender, EventArgs e) //does various things every second to attempt to prevent certain bugs 
+        {
+
+            gamestate = CurrentMenu.GetMenuName();//every second he ensures that the current gamestate is set to the name of the current menu
+            labelGamestate.Text = gamestate;//sets the visible label to the gamestate
+
+            foreach (Weapon temp in weaponshop.getShopInventory()) //Checks every weapon for if it is in the base inventory already and if it is not but it is owned it adds it
+            {
+                bool foundItem = false;
+                foreach (Weapon temp2 in Secretbase.GetWeapons())
+                {
+                    if ((temp.getName().Equals(temp2.getName())))
+                    {
+                        foundItem = true;
+                    }
+
+                }
+                if ((!foundItem) && temp.checkIfOwned()) { Secretbase.addWeapon(temp); }
+
+            }
+
+            if (inCombat) { CombatTick(); }
+
+        }
+        //see also CombatTick() under combat logic under combat subroutines
+        
+        //stuff that doesnt fit into other categories
+        private void DisplayCurrentMenu() //this displays the info for the current menu 
+        {
+            Output(CurrentMenu.GetMenuName());
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    if (CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i] == "0")
+                    {
+                        Output(i.ToString() + " leads nowhere ");
+                    }
+                    else
+                    {
+                        Output(i.ToString() + " " + Menu.MenuList[Convert.ToInt16(CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i])].GetMenuName());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Output(i.ToString() + " " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i]);
+                }
+            }
+        }
+        
+        private void Output(string output) // a custom text based output that I will use instead of the console
+        {
+            txtOut.Text += "\n" + output;//adds the text that is input to this function to a new line on txtOut
         }
         public void Form2Access(int buttonNumber) //allows form2 to call the functions inside form1 without making all of them public
         {
@@ -72,142 +132,13 @@ namespace NEAcomputingForm
                 playerTurnInput(buttonNumber);
             }
         }
-
-        public void DebugMenuAccess(int buttonNumber)
+        public Form1()
         {
-            if (buttonNumber == 0) { txtOut.Clear(); }
-            if (buttonNumber == 1) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); }
-            if (buttonNumber == 2)
-            {
-                Output(CurrentMenu.GetMenuName());
-                Output(CurrentMenu.GetMenuNumber().ToString());
-                DisplayCurrentMenu();
-                Output("ShopInventory:");
-                foreach (Weapon weapon in weaponshop.getShopInventory())
-                {
-                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
-                }
-                Output("UnlockedWeapons");
-                foreach (Weapon weapon in Secretbase.GetWeapons())
-                {
-                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
-                }
-            }
-            if (buttonNumber == 3) { form2 = new NumpadButtons(); form2.Show(); }
-            if (buttonNumber == 4) { debug = new DebugMenu(); debug.Show(); }
-            if (buttonNumber == 5)
-            {
-                inCombat = true;
-                playerTurnNext = true;
-                playerTurn = true;
-                startingCombat = true;
-            }
-            if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
-            if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
-            if (buttonNumber == 8) 
-            {
-                var temp = createSaveLoadFile();
-                SaveProgress(temp); 
-            }
-            if (buttonNumber==9) 
-            {
-                LoadProgress(team.getName()+".json");
-            }
-            if (buttonNumber == 10)
-            {
-                team.changeName(debugStringAccess);
-            }
-            if (buttonNumber==11) { Secretbase.addTrainingTokens(10); }
-        }
-        private void Runtime2_Tick(object sender, EventArgs e)
-        {
-            labelTime.Text = Convert.ToString(Convert.ToInt16(labelTime.Text) + 1);//increments the time by 1 every second
-        }
-        private void DisplayCurrentMenu() //this displays the info for the current menu 
-        {
-            Output(CurrentMenu.GetMenuName());
-            for (int i = 0; i < 10; i++)
-            {
-                try
-                {
-                    if (CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i] == "0")
-                    {
-                        Output(i.ToString() + " leads nowhere ");
-                    }
-                    else
-                    {
-                        Output(i.ToString() + " " + Menu.MenuList[Convert.ToInt16(CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i])].GetMenuName());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output(i.ToString() + " " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i]);
-                }
-            }
-        }
-        private void Runtime_Tick(object sender, EventArgs e) //does various things every second to attempt to prevent certain bugs 
-        {
-
-            gamestate = CurrentMenu.GetMenuName();//every second he ensures that the current gamestate is set to the name of the current menu
-            labelGamestate.Text = gamestate;//sets the visible label to the gamestate
-
-            foreach (Weapon temp in weaponshop.getShopInventory()) //Checks every weapon for if it is in the base inventory already and if it is not but it is owned it adds it
-            {
-                bool foundItem = false;
-                foreach (Weapon temp2 in Secretbase.GetWeapons())
-                {
-                    if ((temp.getName().Equals(temp2.getName())))
-                    {
-                        foundItem = true;
-                    }
-
-                }
-                if ((!foundItem) && temp.checkIfOwned()) { Secretbase.addWeapon(temp); }
-
-            }
-
-            if (inCombat) { CombatTick(); }
-
-        }
-        private void Output(string output) // a custom text based output that I will use instead of the console
-        {
-            txtOut.Text += "\n" + output;//adds the text that is input to this function to a new line on txtOut
-        }
-        private void buttonClear_Click(object sender, EventArgs e) //clears the output
-        {
-            txtOut.Clear();
-            team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); //sets all of the weapons in the bad to the club
-        }
-        private void buttonContinue_Click(object sender, EventArgs e)
-        {
-            //LoadNextMenu("1");
-            Output(CurrentMenu.GetMenuName());
-            Output(CurrentMenu.GetMenuNumber().ToString());
-            DisplayCurrentMenu();
-            Output("ShopInventory:");
-            foreach (Weapon weapon in weaponshop.getShopInventory())
-            {
-                Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
-            }
-            Output("UnlockedWeapons");
-            foreach (Weapon weapon in Secretbase.GetWeapons())
-            {
-                Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
-            }
-
-        }//among us (this is a temporary debug line
-
-        private void LoadNextMenu(string nextMenuNumber) //loads in the next menu 
-        {
-            Output("Going to: " + nextMenuNumber);
-            CurrentMenu = CurrentMenu.GoToNextMenu(nextMenuNumber, CurrentMenu);
-            Output("Current Menu name: " + CurrentMenu.GetMenuName());
-            Output("Current Menu number: " + CurrentMenu.GetMenuNumber());
-            DisplayCurrentMenu();
+            InitializeComponent();
         }
 
 
-        //Here are all of the subroutines that load things in as soon as the code is run
+        //Load subroutines
         private void Form1_Load(object sender, EventArgs e) //this is called when form1 initially loads in
         {
             menuList.Add(CurrentMenu);
@@ -384,8 +315,17 @@ namespace NEAcomputingForm
 
 
         }
+        private void LoadNextMenu(string nextMenuNumber) //loads in the next menu 
+        {
+            Output("Going to: " + nextMenuNumber);
+            CurrentMenu = CurrentMenu.GoToNextMenu(nextMenuNumber, CurrentMenu);
+            Output("Current Menu name: " + CurrentMenu.GetMenuName());
+            Output("Current Menu number: " + CurrentMenu.GetMenuNumber());
+            DisplayCurrentMenu();
+        }
 
 
+        //Handle save/load system
         private SaveLoad createSaveLoadFile() 
         {
             SaveLoad saveLoad = new SaveLoad();
@@ -439,7 +379,7 @@ namespace NEAcomputingForm
             saveLoad.specialistLucks = Lucks;
 
             return saveLoad;
-        }
+        } //loads all of the data to be saved into the saveload class
         private void SaveProgress(SaveLoad temp) 
         {
             string filename = temp.saveName + ".json";
@@ -451,7 +391,7 @@ namespace NEAcomputingForm
             }
             Output("Saving file");
             string file = JsonConvert.SerializeObject(temp);
-            //File.WriteAllText(@"SaveFolder\" + filename, file);
+            
             using (StreamWriter Fred = new StreamWriter(@"SaveFolder\"+filename)) 
             {
                 Fred.Write(file);
@@ -459,7 +399,7 @@ namespace NEAcomputingForm
             }
                 Output(file);
         
-        }
+        } //uses the class to save the data into a json file
         private void LoadProgress(string documentName) //when it is done it should load the progress from a json file
         {
             try
@@ -505,14 +445,8 @@ namespace NEAcomputingForm
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
         }
 
-        private void button1_Click(object sender, EventArgs e) // this is a debug button to test the combat system
-        {
-            inCombat = true;
-            playerTurnNext = true;
-            playerTurn = true;
-            startingCombat = true;
-        }
 
+        //menus and their handling
         private void handleThings(string input) 
         {
             switch (input)
@@ -567,9 +501,9 @@ namespace NEAcomputingForm
                     selectedLevel = 5; break;
                 case "LevelSelect":
                     levelSelect(); break;
-            }
-        }
-        private void specialistMenuHandle(int input) 
+            } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
+        } //handles all of the non integer inputs from menus
+        private void specialistMenuHandle(int input)
         {
             if (currentSpecialist==null) { currentSpecialist = team.GetSquad()[0]; }
             if (input == 0)
@@ -586,8 +520,9 @@ namespace NEAcomputingForm
             }
             else if (input == 2)
             {
-                Output("You have" + Secretbase.getTrainingTokens() + "training tokens");
+                Output("You have " + Secretbase.getTrainingTokens() + " training tokens");
                 CurrentMenu = CurrentMenu.GoToNextMenu("6", CurrentMenu);
+                DisplayCurrentMenu();
             }
             else if (input == 3 && Secretbase.getTrainingTokens() >= 1) 
             {
@@ -626,7 +561,7 @@ namespace NEAcomputingForm
                 Secretbase.removeTrainingToken();
             }
 
-        }
+        } //handles all of the menu inputs related to the specialists
         private void levelSelect() 
         {
             if (selectedLevelset == null)
@@ -646,7 +581,7 @@ namespace NEAcomputingForm
             {
                 CurrentMenu = CurrentMenu.GoToNextMenu("8", CurrentMenu);
                 DisplayCurrentMenu();
-                for (int i = 1; i < 10; i++)
+                for (int i = 1; i < 6; i++)
                 {
                     if (levels[selectedLevelset-1].GetLevels()[i] == null) { }
                     else
@@ -657,9 +592,11 @@ namespace NEAcomputingForm
             }
         
         
-        }
+        } // performs the logic that allows the player to select which levelset and which level
 
-        //Here are all of the subroutines which handle combat
+        //combat subroutines
+
+                //player combat stuff
         private void playerCombatTurn() // the display side of the player turn
         {
  
@@ -716,36 +653,6 @@ namespace NEAcomputingForm
             }
 
         }
-
-        private void enemyCombatTurn()
-        {
-            foreach (Enemy enemy in currentlevel.getEnemyList())
-            {
-                if (enemy.getHealth() > 0)
-                {
-                    Weapon weapon = enemy.GetWeapon();
-                    for (int i = 0; i < team.GetSquad().Count; i++)
-                    {
-                        if (team.GetSquad()[i].isConcious())
-                        {
-                            team.GetSquad()[i].Damage(weapon.getType1Damage(), weapon.getDamageType1());
-                            Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
-                            team.GetSquad()[i].Damage(weapon.getType2Damage(), weapon.getDamageType2());
-                            i += 999;
-                        }
-
-                    }
-
-                }
-
-                enemyTurn = false;
-                playerTurn = true;
-                optionsOnDisplay = false;
-
-            }
-
-
-        }
         private void DoOption(CombatOption option)// here the option the player chose will be performed
         {
             bool optionDone = false;
@@ -786,7 +693,62 @@ namespace NEAcomputingForm
             playerTurn = false;
             enemyTurn = true;
         }
+        
+        private bool checkIfPlayerWin()
+        {
+            int count = 0;
+            foreach (Enemy enemy in currentlevel.getEnemyList())
+            {
+                if (enemy.getHealth() <= 0) count++;
+            }
+            if (count == currentlevel.getEnemyList().Count) { return true; }
 
+            return false;
+        } //a function to see if the player defeated all the enemies
+        private bool checkIfPlayerLost()
+        {
+            int count = 0;
+            foreach (Specialist specialist in team.GetSquad())
+            {
+                if (!specialist.isConcious()) { count++; }
+            }
+            if (count == (team.GetSquad().Count)) { return true; }
+
+            return false;
+        }  //a function to see if the player has no specialists left
+
+                //enemy combat stuff
+        private void enemyCombatTurn()
+        {
+            foreach (Enemy enemy in currentlevel.getEnemyList())
+            {
+                if (enemy.getHealth() > 0)
+                {
+                    Weapon weapon = enemy.GetWeapon();
+                    for (int i = 0; i < team.GetSquad().Count; i++)
+                    {
+                        if (team.GetSquad()[i].isConcious())
+                        {
+                            team.GetSquad()[i].Damage(weapon.getType1Damage(), weapon.getDamageType1());
+                            Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
+                            team.GetSquad()[i].Damage(weapon.getType2Damage(), weapon.getDamageType2());
+                            i += 999;
+                        }
+
+                    }
+
+                }
+
+                enemyTurn = false;
+                playerTurn = true;
+                optionsOnDisplay = false;
+
+            }
+
+
+        } //performs the combat turn of the enemy
+                
+                //combat logic
         private void CombatTick()
         {
             llbCombat.Text = "Yes";
@@ -828,39 +790,96 @@ namespace NEAcomputingForm
                 enemyCombatTurn();
             }
 
-        }
-        private bool checkIfPlayerWin()
-        {
-            int count = 0;
-            foreach (Enemy enemy in currentlevel.getEnemyList())
-            {
-                if (enemy.getHealth() <= 0) count++;
-            }
-            if (count == currentlevel.getEnemyList().Count) { return true; }
+        }//performs the combat logic every "tick" (1 ms)
 
-            return false;
-        }
-        private bool checkIfPlayerLost()
-        {
-            int count = 0;
-            foreach (Specialist specialist in team.GetSquad())
-            {
-                if (!specialist.isConcious()) { count++; }
-            }
-            if (count == (team.GetSquad().Count)) { return true; }
 
-            return false;
-        }
-
+        //here are all of the debug subroutines
         private void debutton4_Click(object sender, EventArgs e)
         {
             team.GetSquad()[0].Heal(999999999, true);
         }
-
+        public void DebugMenuAccess(int buttonNumber)
+        {
+            if (buttonNumber == 0) { txtOut.Clear(); }
+            if (buttonNumber == 1) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); }
+            if (buttonNumber == 2)
+            {
+                Output(CurrentMenu.GetMenuName());
+                Output(CurrentMenu.GetMenuNumber().ToString());
+                DisplayCurrentMenu();
+                Output("ShopInventory:");
+                foreach (Weapon weapon in weaponshop.getShopInventory())
+                {
+                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+                }
+                Output("UnlockedWeapons");
+                foreach (Weapon weapon in Secretbase.GetWeapons())
+                {
+                    Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+                }
+            }
+            if (buttonNumber == 3) { form2 = new NumpadButtons(); form2.Show(); }
+            if (buttonNumber == 4) { debug = new DebugMenu(); debug.Show(); }
+            if (buttonNumber == 5)
+            {
+                inCombat = true;
+                playerTurnNext = true;
+                playerTurn = true;
+                startingCombat = true;
+            }
+            if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
+            if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
+            if (buttonNumber == 8) 
+            {
+                var temp = createSaveLoadFile();
+                SaveProgress(temp); 
+            }
+            if (buttonNumber==9) 
+            {
+                LoadProgress(team.getName()+".json");
+            }
+            if (buttonNumber == 10)
+            {
+                team.changeName(debugStringAccess);
+            }
+            if (buttonNumber==11) { Secretbase.addTrainingTokens(10); }
+        } //the function that allows the debug menu to do stuff in the main form
         private void btnOpenDebug_Click(object sender, EventArgs e)
         {
             debug.Show();
+        } //opens the debug menu
+        private void button1_Click(object sender, EventArgs e) // this is a debug button to test the combat system
+        {
+            inCombat = true;
+            playerTurnNext = true;
+            playerTurn = true;
+            startingCombat = true;
         }
+        private void buttonClear_Click(object sender, EventArgs e) //clears the output
+        {
+            txtOut.Clear();
+            team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[1]); //sets all of the weapons in the bad to the club
+        }
+        private void buttonContinue_Click(object sender, EventArgs e)
+        {
+            //LoadNextMenu("1");
+            Output(CurrentMenu.GetMenuName());
+            Output(CurrentMenu.GetMenuNumber().ToString());
+            DisplayCurrentMenu();
+            Output("ShopInventory:");
+            foreach (Weapon weapon in weaponshop.getShopInventory())
+            {
+                Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+            }
+            Output("UnlockedWeapons");
+            foreach (Weapon weapon in Secretbase.GetWeapons())
+            {
+                Output("Name:" + weapon.getName() + " Type 1 damage:" + weapon.getType1Damage() + " Type 2 damage:" + weapon.getType2Damage() + " Action cost:" + weapon.getActionsConsumed() + " Cost:" + weapon.getCost() + " IsOwned:" + weapon.checkIfOwned());
+            }
+
+        }//among us (this is a temporary debug line
+
+        
     }
 
     //From here starts the classes which I use in Form1
@@ -1448,7 +1467,7 @@ namespace NEAcomputingForm
     }
 
 
-    class SaveLoad 
+    class SaveLoad //acts as the template for the json files in order to save/load progress
     {
         public string saveName;
         public List<string> unlockedWeapons;
