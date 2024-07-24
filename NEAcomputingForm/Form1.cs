@@ -911,11 +911,11 @@ namespace NEAcomputingForm
             }
 
         }
-        public static OleDbConnection connection(string database) // I have traced the error all the way here, I suspect that the connection string is wrong
+        public static OleDbConnection connection(string database) // I have traced the error all the way here Problem solved: OLEDB needs 64 bit access not 32 bit access
         {
             string conStr = "Provider=Microsoft.ACE.OLEDB.16.0;Data Source=" + database + ".accdb";//provides the connection string to allow the program to access the database
 
-            conStr = "Provider=Microsoft.ACE.OLEDB.4.0;Data Source="+database+".accdb"+";";//temp debug line to test different connection strings
+            
 
             OleDbConnection conn = new OleDbConnection(conStr);
             try
