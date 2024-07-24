@@ -243,15 +243,19 @@ namespace NEAcomputingForm
 
                 string SQL = "SELECT Enemies.*, Levels.LevelSetNum "
                              + "FROM LevelsAndSetLink, LevelSets INNER JOIN(Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum "
-                             + "WHERE(((Levels.LevelSetNum) = " + levelSetNum + 1 + "));";//defines the SQL statement that gets the enemy data from the table
+                             + "WHERE(((Levels.LevelSetNum) = " + levelSetNum +1+ "));";//defines the SQL statement that gets the enemy data from the table
+
+                SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
                 database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
+
+                
                 Level[] templv = new Level[5];
                 for (int i = 0; i < 5; i++)
                 {
-                    templv[i] = new Level(i + 1, levelSetNum + 1);//adds all of the levels to templv
+                    templv[i] = new Level(i + 1, levelSetNum+1);//adds all of the levels to templv
                     templv[i].levelID = Convert.ToChar(i + 65) +""+ Convert.ToChar(levelSetNum+65);
                 }
-                /*
+                
                 foreach (DataRow row in database.Tables[0].Rows)//iterates through all of the rows in the database (I only call upon one table)
                 { 
                     
@@ -265,8 +269,8 @@ namespace NEAcomputingForm
                     int enemyLevel = row.Field<int>(5);
                     Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim,weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
-                }*/
-
+                }
+                /*
                 //(DEBUG) due to the above bit not running this allows me to debug the combat system until I get it working
                 int enemyID = 0;
                 string enemyName = "Test4";
@@ -277,7 +281,7 @@ namespace NEAcomputingForm
                 Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);
                 templv[0].AddEnemy(tempE);
                 //(END DEBUG)
-
+                */
                 Levelset levelset = new Levelset(levelSetNum + 1);
                 for (int i = 0; i < 5; i++)
                 {
@@ -889,14 +893,14 @@ namespace NEAcomputingForm
         {
             try
             {
-                // SQL = "SELECT * FROM Enemies;";
+               
                 OleDbConnection conn = connection(dbasename);
 
                 //I have traced the problem with the enemies not being loaded in all the way back to here, the rows of the database are simply just not making it into the program, why: I have no clue *************
 
                 OleDbDataAdapter adapter = new OleDbDataAdapter(SQL, conn);//the line above connects to the database by making a temporary copy of the required data
                 DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet, "DATA");//this puts the data into a dataset with the tag DATA
+                adapter.Fill(dataSet);//this puts the data into a dataset
                 return dataSet;
             }
             catch
@@ -907,13 +911,16 @@ namespace NEAcomputingForm
             }
 
         }
-        public static OleDbConnection connection(string database)
+        public static OleDbConnection connection(string database) // I have traced the error all the way here, I suspect that the connection string is wrong
         {
             string conStr = "Provider=Microsoft.ACE.OLEDB.16.0;Data Source=" + database + ".accdb";//provides the connection string to allow the program to access the database
+
+            conStr = "Provider=Microsoft.ACE.OLEDB.4.0;Data Source="+database+".accdb"+";";
+
             OleDbConnection conn = new OleDbConnection(conStr);
             try
             {
-                conn.Open();//opens the connection
+                conn.Open();//opens the connection (do not actively debug this line it causes an error)
                 return conn;
             }
             catch (Exception e)
