@@ -915,7 +915,7 @@ namespace NEAcomputingForm
         {
             string conStr = "Provider=Microsoft.ACE.OLEDB.16.0;Data Source=" + database + ".accdb";//provides the connection string to allow the program to access the database
 
-            conStr = "Provider=Microsoft.ACE.OLEDB.4.0;Data Source="+database+".accdb"+";";
+            conStr = "Provider=Microsoft.ACE.OLEDB.4.0;Data Source="+database+".accdb"+";";//temp debug line to test different connection strings
 
             OleDbConnection conn = new OleDbConnection(conStr);
             try
