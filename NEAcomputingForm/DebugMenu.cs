@@ -89,5 +89,10 @@ namespace NEAcomputingForm
         {
             form1.DebugMenuAccess(11);
         }
+
+        private void btnLockpick_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(12);
+        }
     }
 }

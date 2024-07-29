@@ -26,8 +26,8 @@ namespace NEAcomputingForm
         NumpadButtons form2;
         DebugMenu debug;
         CombatMenu combatTurn;
-        int selectedLevelset = 0;
-        int selectedLevel = 0;
+        int selectedLevelset = 999;
+        int selectedLevel = 999;
         string gamestate = "Loading";// a string that can be accessed anywhere in form 1
 
             //all of the boollean values that make combat work
@@ -381,7 +381,7 @@ namespace NEAcomputingForm
             saveLoad.specialistIntelligences = Intelligences;
             saveLoad.specialistAgilities = Agilities;
             saveLoad.specialistLucks = Lucks;
-
+            saveLoad.trainingTokens = Secretbase.getTrainingTokens();
             return saveLoad;
         } //loads all of the data to be saved into the saveload class
         private void SaveProgress(SaveLoad temp) 
@@ -408,7 +408,7 @@ namespace NEAcomputingForm
         {
             try
             {
-                string file =  File.ReadAllText(@"SaveFolder\" + documentName);
+                string file =  File.ReadAllText(@"SaveFolder\" + documentName+".json");
                 SaveLoad temp = new SaveLoad();
                 temp = JsonConvert.DeserializeObject<SaveLoad>(file);
                 int i =0;
@@ -444,6 +444,7 @@ namespace NEAcomputingForm
                     }
                     else { weapon.setUnowned(); }
                 }
+                Secretbase.addTrainingTokens(temp.trainingTokens - Secretbase.getTrainingTokens());
                 
             }
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
@@ -474,37 +475,96 @@ namespace NEAcomputingForm
                 case "Luck":
                     specialistMenuHandle(8); break;
                 case "Cancel":
-                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); DisplayCurrentMenu(); break;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); 
+                    DisplayCurrentMenu(); 
+                    break;
                 case "Levelset1":
-                    selectedLevelset = 1; break;
+                    selectedLevelset = 1;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9",CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset2":
-                    selectedLevelset = 2; break;
+                    selectedLevelset = 2;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset3":
-                    selectedLevelset = 3; break;
+                    selectedLevelset = 3;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset4":
-                    selectedLevelset = 4; break;
+                    selectedLevelset = 4;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset5":
-                    selectedLevelset = 5; break;
+                    selectedLevelset = 5;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset6":
-                    selectedLevelset = 6; break;
+                    selectedLevelset = 6;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset7":
-                    selectedLevelset = 7; break;
+                    selectedLevelset = 7;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset8":
-                    selectedLevelset = 8; break;
+                    selectedLevelset = 8;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Levelset9":
-                    selectedLevelset = 9; break;
+                    selectedLevelset = 9;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Level1":
-                    selectedLevel = 1; break;
+                    selectedLevel = 1;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Level2":
-                    selectedLevel = 2; break;
+                    selectedLevel = 2;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Level3":
-                    selectedLevel = 3; break;
+                    selectedLevel = 3;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Level4":
-                    selectedLevel = 4; break;
+                    selectedLevel = 4;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "Level5":
-                    selectedLevel = 5; break;
+                    selectedLevel = 5;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
                 case "LevelSelect":
                     levelSelect(); break;
+                case "Deselect Level":
+                    selectedLevel = 999;
+                    selectedLevelset = 999;
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
+                case "Enter Combat":
+                    startCombat();
+                    break;
+                case "Save":
+                    SaveProgress(createSaveLoadFile());
+                    break;
+                case "Load":
+                    LoadProgress(team.getName()); ;
+                    break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
         private void specialistMenuHandle(int input)
@@ -568,30 +628,27 @@ namespace NEAcomputingForm
         } //handles all of the menu inputs related to the specialists
         private void levelSelect() 
         {
-            if (selectedLevelset == null)
+            if (selectedLevelset == null||selectedLevelset==999)
             {
                 CurrentMenu = CurrentMenu.GoToNextMenu("7", CurrentMenu);
                 DisplayCurrentMenu();
                 for (int i = 1; i < 10; i++)
                 {
-                    if (levels[i] == null) { }
-                    else
-                    {
+                    try { 
                         Output("Level set " + i + " name:" + levels[i].getName() + "Description" + levels[i].getDescription());
-                    }
+                    }catch (Exception e) { }
                 }
             }
-            else if (selectedLevel==null) 
+            else if (selectedLevel==null||selectedLevel==999) 
             {
                 CurrentMenu = CurrentMenu.GoToNextMenu("8", CurrentMenu);
                 DisplayCurrentMenu();
                 for (int i = 1; i < 6; i++)
                 {
-                    if (levels[selectedLevelset-1].GetLevels()[i] == null) { }
-                    else
+                    try 
                     {
                         Output("Level number:" + i  + " Unlocked: "+ levels[selectedLevelset - 1].GetLevels()[i].unlocked);
-                    }
+                    }catch (Exception e) { }
                 }
             }
         
@@ -705,10 +762,10 @@ namespace NEAcomputingForm
             {
                 if (enemy.getHealth() <= 0) count++;
             }
-            if (count == currentlevel.getEnemyList().Count) { return true; }
-
+            if (count == currentlevel.getEnemyList().Count) {if (selectedLevel<5) { levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; } return true; }
+            
             return false;
-        } //a function to see if the player defeated all the enemies
+        } //a function to see if the player defeated all the enemies and also unlock the next level where relevant
         private bool checkIfPlayerLost()
         {
             int count = 0;
@@ -771,6 +828,7 @@ namespace NEAcomputingForm
                 enemyTurn = false;
                 llbCombat.Text = "No";
                 Output("Player lost");
+                CurrentMenu = CurrentMenu.GoToNextMenu("9",CurrentMenu);
             } // checks to see if the player has lost
             if (checkIfPlayerWin())
             {
@@ -796,6 +854,28 @@ namespace NEAcomputingForm
 
         }//performs the combat logic every "tick" (1 ms)
 
+        private void startCombat() 
+        {
+            try
+            {
+                currentlevel = levels[selectedLevelset - 1].GetLevels()[selectedLevel - 1];
+                if (currentlevel.unlocked||selectedLevel==1)
+                {
+                    currentlevel.unlocked = true;
+                    inCombat = true;
+                    playerTurnNext = true;
+                    playerTurn = true;
+                    startingCombat = true;
+                }
+                else { Output("This level is currently locked"); }
+            }
+            catch (Exception e) 
+            { 
+                Output("Please select a levelset and a level before entering combat.");
+                Output("Selected levelset:"+selectedLevelset);
+                Output("Selected level:"+selectedLevel);
+            }
+        }
 
         //here are all of the debug subroutines
         private void debutton4_Click(object sender, EventArgs e)
@@ -826,10 +906,7 @@ namespace NEAcomputingForm
             if (buttonNumber == 4) { debug = new DebugMenu(); debug.Show(); }
             if (buttonNumber == 5)
             {
-                inCombat = true;
-                playerTurnNext = true;
-                playerTurn = true;
-                startingCombat = true;
+                startCombat();
             }
             if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
             if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
@@ -840,13 +917,14 @@ namespace NEAcomputingForm
             }
             if (buttonNumber==9) 
             {
-                LoadProgress(team.getName()+".json");
+                LoadProgress(team.getName());
             }
             if (buttonNumber == 10)
             {
                 team.changeName(debugStringAccess);
             }
             if (buttonNumber==11) { Secretbase.addTrainingTokens(10); }
+            if (buttonNumber==12) { currentlevel.unlocked = true; }
         } //the function that allows the debug menu to do stuff in the main form
         private void btnOpenDebug_Click(object sender, EventArgs e)
         {
@@ -854,10 +932,7 @@ namespace NEAcomputingForm
         } //opens the debug menu
         private void button1_Click(object sender, EventArgs e) // this is a debug button to test the combat system
         {
-            inCombat = true;
-            playerTurnNext = true;
-            playerTurn = true;
-            startingCombat = true;
+            startCombat();
         }
         private void buttonClear_Click(object sender, EventArgs e) //clears the output
         {
@@ -1486,6 +1561,7 @@ namespace NEAcomputingForm
         public List<int> specialistIntelligences;
         public List<int> specialistAgilities;
         public List<int> specialistLucks;
+        public int trainingTokens;
     }
 
 
@@ -1495,9 +1571,6 @@ namespace NEAcomputingForm
     Convert Debug buttons into a dev menu          7
     Fill out files                                 5
     Polish stuff                                   9
-    Menus                                          2
-    Fix database                                   3
-    Level select logic and ui                      4
     Enhance Save load system                       6
     Add comments                                   10
      */

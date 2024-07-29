@@ -45,13 +45,14 @@
             label1 = new Label();
             label2 = new Label();
             btnaddtokens = new Button();
+            btnLockpick = new Button();
             SuspendLayout();
             // 
             // btnClr
             // 
             btnClr.Location = new Point(2, 114);
             btnClr.Name = "btnClr";
-            btnClr.Size = new Size(146, 23);
+            btnClr.Size = new Size(193, 23);
             btnClr.TabIndex = 0;
             btnClr.Text = "Clear Output Box";
             btnClr.UseVisualStyleBackColor = true;
@@ -59,7 +60,7 @@
             // 
             // btnClub
             // 
-            btnClub.Location = new Point(154, 29);
+            btnClub.Location = new Point(205, 29);
             btnClub.Name = "btnClub";
             btnClub.Size = new Size(193, 23);
             btnClub.TabIndex = 1;
@@ -71,7 +72,7 @@
             // 
             btnDebugOut.Location = new Point(2, 29);
             btnDebugOut.Name = "btnDebugOut";
-            btnDebugOut.Size = new Size(146, 23);
+            btnDebugOut.Size = new Size(193, 23);
             btnDebugOut.TabIndex = 2;
             btnDebugOut.Text = "Output debug data";
             btnDebugOut.UseVisualStyleBackColor = true;
@@ -81,7 +82,7 @@
             // 
             btnNumpad.Location = new Point(2, 56);
             btnNumpad.Name = "btnNumpad";
-            btnNumpad.Size = new Size(146, 23);
+            btnNumpad.Size = new Size(193, 23);
             btnNumpad.TabIndex = 3;
             btnNumpad.Text = "Open Numpad";
             btnNumpad.UseVisualStyleBackColor = true;
@@ -91,7 +92,7 @@
             // 
             btnOpenDebug.Location = new Point(2, 85);
             btnOpenDebug.Name = "btnOpenDebug";
-            btnOpenDebug.Size = new Size(146, 23);
+            btnOpenDebug.Size = new Size(193, 23);
             btnOpenDebug.TabIndex = 4;
             btnOpenDebug.Text = "Open Debug Menu";
             btnOpenDebug.UseVisualStyleBackColor = true;
@@ -99,7 +100,7 @@
             // 
             // btnCombat
             // 
-            btnCombat.Location = new Point(154, 114);
+            btnCombat.Location = new Point(205, 114);
             btnCombat.Name = "btnCombat";
             btnCombat.Size = new Size(193, 23);
             btnCombat.TabIndex = 5;
@@ -109,7 +110,7 @@
             // 
             // btnMegaHeal
             // 
-            btnMegaHeal.Location = new Point(154, 85);
+            btnMegaHeal.Location = new Point(205, 85);
             btnMegaHeal.Name = "btnMegaHeal";
             btnMegaHeal.Size = new Size(193, 23);
             btnMegaHeal.TabIndex = 6;
@@ -119,7 +120,7 @@
             // 
             // btnStab
             // 
-            btnStab.Location = new Point(154, 56);
+            btnStab.Location = new Point(205, 56);
             btnStab.Name = "btnStab";
             btnStab.Size = new Size(193, 23);
             btnStab.TabIndex = 7;
@@ -131,7 +132,7 @@
             // 
             lblCombatDebug.AutoSize = true;
             lblCombatDebug.BorderStyle = BorderStyle.FixedSingle;
-            lblCombatDebug.Location = new Point(205, 9);
+            lblCombatDebug.Location = new Point(258, 9);
             lblCombatDebug.Name = "lblCombatDebug";
             lblCombatDebug.Size = new Size(90, 17);
             lblCombatDebug.TabIndex = 8;
@@ -149,9 +150,9 @@
             // 
             // btnTestSave
             // 
-            btnTestSave.Location = new Point(353, 29);
+            btnTestSave.Location = new Point(407, 29);
             btnTestSave.Name = "btnTestSave";
-            btnTestSave.Size = new Size(131, 23);
+            btnTestSave.Size = new Size(193, 23);
             btnTestSave.TabIndex = 10;
             btnTestSave.Text = "Test Save";
             btnTestSave.UseVisualStyleBackColor = true;
@@ -159,9 +160,9 @@
             // 
             // btnTestLoad
             // 
-            btnTestLoad.Location = new Point(353, 85);
+            btnTestLoad.Location = new Point(407, 85);
             btnTestLoad.Name = "btnTestLoad";
-            btnTestLoad.Size = new Size(131, 23);
+            btnTestLoad.Size = new Size(193, 23);
             btnTestLoad.TabIndex = 11;
             btnTestLoad.Text = "Test Load";
             btnTestLoad.UseVisualStyleBackColor = true;
@@ -169,9 +170,9 @@
             // 
             // btnChangeSquadName
             // 
-            btnChangeSquadName.Location = new Point(353, 56);
+            btnChangeSquadName.Location = new Point(407, 56);
             btnChangeSquadName.Name = "btnChangeSquadName";
-            btnChangeSquadName.Size = new Size(131, 23);
+            btnChangeSquadName.Size = new Size(193, 23);
             btnChangeSquadName.TabIndex = 12;
             btnChangeSquadName.Text = "Change Squad Name";
             btnChangeSquadName.UseVisualStyleBackColor = true;
@@ -179,7 +180,7 @@
             // 
             // txtDebugInput
             // 
-            txtDebugInput.Location = new Point(12, 172);
+            txtDebugInput.Location = new Point(496, 415);
             txtDebugInput.Name = "txtDebugInput";
             txtDebugInput.Size = new Size(292, 23);
             txtDebugInput.TabIndex = 13;
@@ -189,7 +190,7 @@
             // 
             label1.AutoSize = true;
             label1.BorderStyle = BorderStyle.FixedSingle;
-            label1.Location = new Point(12, 152);
+            label1.Location = new Point(496, 395);
             label1.Name = "label1";
             label1.Size = new Size(292, 17);
             label1.TabIndex = 14;
@@ -199,7 +200,7 @@
             // 
             label2.AutoSize = true;
             label2.BorderStyle = BorderStyle.FixedSingle;
-            label2.Location = new Point(366, 9);
+            label2.Location = new Point(453, 9);
             label2.Name = "label2";
             label2.Size = new Size(100, 17);
             label2.TabIndex = 15;
@@ -207,19 +208,30 @@
             // 
             // btnaddtokens
             // 
-            btnaddtokens.Location = new Point(291, 234);
+            btnaddtokens.Location = new Point(205, 143);
             btnaddtokens.Name = "btnaddtokens";
-            btnaddtokens.Size = new Size(75, 23);
+            btnaddtokens.Size = new Size(193, 23);
             btnaddtokens.TabIndex = 16;
             btnaddtokens.Text = "Add 10 training tokens";
             btnaddtokens.UseVisualStyleBackColor = true;
             btnaddtokens.Click += btnaddtokens_Click;
+            // 
+            // btnLockpick
+            // 
+            btnLockpick.Location = new Point(205, 172);
+            btnLockpick.Name = "btnLockpick";
+            btnLockpick.Size = new Size(193, 23);
+            btnLockpick.TabIndex = 17;
+            btnLockpick.Text = "Unlock currently selected level";
+            btnLockpick.UseVisualStyleBackColor = true;
+            btnLockpick.Click += btnLockpick_Click;
             // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnLockpick);
             Controls.Add(btnaddtokens);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -263,5 +275,6 @@
         private Label label1;
         private Label label2;
         private Button btnaddtokens;
+        private Button btnLockpick;
     }
 }
