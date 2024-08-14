@@ -77,23 +77,39 @@ namespace NEAcomputingForm
         //stuff that doesnt fit into other categories
         private void DisplayCurrentMenu() //this displays the info for the current menu 
         {
+            txtOut.Text = "";
             Output(CurrentMenu.GetMenuName());
             for (int i = 0; i < 10; i++)
             {
+                string temp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i];
                 try
-                {
-                    if (CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i] == "0")
+                {   
+                    if (temp == "0")
                     {
                         Output(i.ToString() + " leads nowhere ");
                     }
                     else
                     {
-                        Output(i.ToString() + " " + Menu.MenuList[Convert.ToInt16(CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i])].GetMenuName());
+                        Output(i.ToString() + " " + menuList[Convert.ToInt16(temp)].GetMenuName());
                     }
                 }
                 catch (Exception ex)
                 {
-                    Output(i.ToString() + " " + CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i]);
+                    if (temp.Contains("Levelset"))
+                    {
+                        string temp3 = temp.Substring(8);
+                        if (Convert.ToInt16(temp3) > levels.Count) 
+                        {
+                            Output(i.ToString()+ " "+ temp + " does not currently exist.");
+                        }  
+                        else 
+                        { 
+                            Levelset temp2 = levels[Convert.ToInt16(temp3) - 1];
+                            Output(i.ToString() + " " + temp + " Name: " + temp2.getName() + " Description: " + temp2.getDescription() + " Diffictulty: " + temp2.getDiff());
+                        }
+                         
+                    } 
+                    else { Output(i.ToString() + " " + temp); }
                 }
             }
         }
@@ -156,12 +172,15 @@ namespace NEAcomputingForm
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
             loadLevels(1);//loads in the levels in the level set specified
+            loadLevelsets();//loads in the name difficulty etc for all of the level sets
             team.AddToSquad(new Specialist("Debug man"));
             try
             {
                 CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
             }
             catch (Exception ex) { Output(ex.ToString() + " the first menu is not loading in please fix"); }
+            Output("To begin press 0, you will be put into the base. I would suggest you equip some weapons in the specialist menu");
+            
         }
         private void LoadWeapons() //loads in all the weapons 
         {
@@ -235,6 +254,23 @@ namespace NEAcomputingForm
                 return null;
             }
         }
+        private void loadLevelsets() 
+        {
+            DataSet database = new DataSet();
+
+            string SQL = "SELECT LevelSets.*"
+                +"FROM LevelSets;";
+            //defines the SQL statement that gets the levelset data from the table
+
+           
+            database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
+            for (int i = 0; i < database.Tables[0].Rows.Count;i++) 
+            {
+                levels[i].setTheName(database.Tables[0].Rows[i].Field<string>(1));
+                levels[i].setDifficulty(database.Tables[0].Rows[i].Field<string>(3));
+                levels[i].setDesc(database.Tables[0].Rows[i].Field<string>(2));
+            }
+        }
         private void loadLevels(int levelSetNum) //loads the enemies from the database into the levels in the relevant levelset 
         {
             try
@@ -243,9 +279,9 @@ namespace NEAcomputingForm
 
                 string SQL = "SELECT Enemies.*, Levels.LevelSetNum "
                              + "FROM LevelsAndSetLink, LevelSets INNER JOIN(Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum "
-                             + "WHERE(((Levels.LevelSetNum) = " + levelSetNum +1+ "));";//defines the SQL statement that gets the enemy data from the table
+                             + "WHERE(((Levels.LevelSetNum) = " + levelSetNum + "));";//defines the SQL statement that gets the enemy data from the table
 
-                SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
+                //SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
                 database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
 
                 
@@ -841,7 +877,7 @@ namespace NEAcomputingForm
 
             if (playerTurn && !optionsOnDisplay && inCombat)
             {
-                Output("Player turn debug output");
+                Output("Player turn");
                 playerCombatTurn();
 
             } //allows the player to actually input and displays options
@@ -1387,6 +1423,10 @@ namespace NEAcomputingForm
         public string getName() { return this.setName; }
         public string getDescription() { return this.description; }
         public List<Level> GetLevels() { return this.Levels; }
+        public string getDiff() { return this.difficulty; }
+        public void setTheName(string name) { this.setName = name; }
+        public void setDifficulty(string difficulty) { this.difficulty = difficulty; }
+        public void setDesc(string desc) { this.description = desc; }
     }
 
     class Menu  //The base template for the menus 
@@ -1573,5 +1613,6 @@ namespace NEAcomputingForm
     Polish stuff                                   9
     Enhance Save load system                       6
     Add comments                                   10
+    Allow user to change weapons for specialists   3
      */
 }
