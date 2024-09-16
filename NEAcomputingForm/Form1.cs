@@ -5,7 +5,7 @@ using System.Data.OleDb;
 using System.Xml;
 using Newtonsoft.Json;
 namespace NEAcomputingForm
-{
+{//testing github push
 
     public partial class Form1 : Form
     {
@@ -39,6 +39,9 @@ namespace NEAcomputingForm
         bool playerTurnNext = false;
         public string debugStringAccess = "";
 
+
+        //dunno
+        Dictionary<int, (string, int)> tierBuffs = new Dictionary<int, (string, int)>();
 
 
         
@@ -167,7 +170,13 @@ namespace NEAcomputingForm
         }
         private void LoadThingsIn() //calls on all of the different load subroutines to ensure everything is loaded in 
         {
-
+            tierBuffs.Add(0,("Bad", 0));
+            tierBuffs.Add(1,("Poor",0));
+            tierBuffs.Add(2,("Basic", 0));
+            tierBuffs.Add(3,("Standard", 0));
+            tierBuffs.Add(4,("Augmented", 0));
+            tierBuffs.Add(5,("Militarised", 0));
+            tierBuffs.Add(6,("Unimpressionable", 0));
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
@@ -423,16 +432,16 @@ namespace NEAcomputingForm
         private void SaveProgress(SaveLoad temp) 
         {
             string filename = temp.saveName + ".json";
-            if (!File.Exists(@"SaveFolder\" + filename))
+            if (!File.Exists(@"SaveFolders\" + filename))
             {
-                var tempfile = File.Create(@"SaveFolder\" + filename);
+                var tempfile = File.Create(@"SavesFolder\" + filename);
                 tempfile.Close();
                 Output("File created");
             }
             Output("Saving file");
             string file = JsonConvert.SerializeObject(temp);
             
-            using (StreamWriter Fred = new StreamWriter(@"SaveFolder\"+filename)) 
+            using (StreamWriter Fred = new StreamWriter(@"SavesFolder\"+filename)) 
             {
                 Fred.Write(file);
             
@@ -444,7 +453,7 @@ namespace NEAcomputingForm
         {
             try
             {
-                string file =  File.ReadAllText(@"SaveFolder\" + documentName+".json");
+                string file =  File.ReadAllText(@"SavesFolder\" + documentName+".json");
                 SaveLoad temp = new SaveLoad();
                 temp = JsonConvert.DeserializeObject<SaveLoad>(file);
                 int i =0;
@@ -994,6 +1003,15 @@ namespace NEAcomputingForm
 
         }//among us (this is a temporary debug line
 
+        //shop and other logistics
+        private void buyWeapon(Weapon purchasedweapon) 
+        {
+            if (purchasedweapon.checkIfOwned()) 
+            { 
+                
+            }
+        
+        }
         
     }
 
@@ -1117,6 +1135,8 @@ namespace NEAcomputingForm
         int actionsConsumed;
         bool owned = false;
         int cost;
+        string tier = "Poor";
+        int tierNumber = 0;
         public Weapon(string name, string damageType1, string damageType2, int Type1Damage, int Type2Damage, int actionsConsumed, int cost)
         {
             this.name = name;
@@ -1159,6 +1179,11 @@ namespace NEAcomputingForm
         }
         public void setOwned() { this.owned = true; }
         public void setUnowned() { this.owned = false; }
+        public void increaseTier(Dictionary<int,(string,int)> tierbuffs) 
+        { 
+            this.tierNumber += 1;
+            this.tier = tierbuffs[tierNumber].Item1;
+        }
 
     }
     class WeaponShop // used to make the list of weapons in the shop global without having a list which can easily be messed up by mistake 
@@ -1608,11 +1633,12 @@ namespace NEAcomputingForm
     /* 
      To do list:                                priority (lower higher priority)
     
-    Convert Debug buttons into a dev menu          7
-    Fill out files                                 5
-    Polish stuff                                   9
-    Enhance Save load system                       6
-    Add comments                                   10
-    Allow user to change weapons for specialists   3
+    Convert Debug buttons into a dev menu                        7
+    Fill out files                                               5
+    Polish stuff                                                 9
+    Enhance Save load system                                     6
+    Add comments                                                10
+    Allow user to change weapons for specialists                 3
+    Improve and enhance weapon system (including above)          1
      */
 }
