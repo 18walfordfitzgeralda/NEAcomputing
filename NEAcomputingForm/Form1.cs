@@ -11,7 +11,7 @@ namespace NEAcomputingForm
     {
         //defining the initial of all the variables accessible anywhere in form 1
 
-            //all of the "global" variables using my own classes
+        //all of the "global" variables using my own classes
         MenuNavigation CurrentMenu = new MenuNavigation("Loading", "0");//creates the most basic menu to let the player know the game is loading and also sets the menu that can be accessed from anywhere in form 1
         List<MenuNavigation> menuList = new List<MenuNavigation>();// a list of menus that can be accessed from anywhere in form 1
         Squad team = new Squad("My Team");//same as above but with a squad (default name is My Team
@@ -21,7 +21,7 @@ namespace NEAcomputingForm
         Level currentlevel;
         Specialist currentSpecialist;
 
-            //all of the "global" varibles using standard or semistandard classes
+        //all of the "global" varibles using standard or semistandard classes
         DatabaseConnector databaseConnector = new DatabaseConnector();// a database connector (it does what it says on the tin {it allows connection to a database})
         NumpadButtons form2;
         DebugMenu debug;
@@ -29,8 +29,10 @@ namespace NEAcomputingForm
         int selectedLevelset = 999;
         int selectedLevel = 999;
         string gamestate = "Loading";// a string that can be accessed anywhere in form 1
+        Weapon selectedWeapon = new Weapon("SelectedWeaponPlaceHolder", "0", "0", 0, 0, 0, 0);
+        int selectedSlot = 999;
 
-            //all of the boollean values that make combat work
+        //all of the boollean values that make combat work
         bool inCombat = false;
         bool playerTurn = false;
         bool enemyTurn = false;
@@ -44,9 +46,9 @@ namespace NEAcomputingForm
         Dictionary<int, (string, int)> tierBuffs = new Dictionary<int, (string, int)>();
 
 
-        
-        
-       //clocks timers and ticks
+
+
+        //clocks timers and ticks
         private void Runtime2_Tick(object sender, EventArgs e)
         {
             labelTime.Text = Convert.ToString(Convert.ToInt16(labelTime.Text) + 1);//increments the time by 1 every second
@@ -76,7 +78,7 @@ namespace NEAcomputingForm
 
         }
         //see also CombatTick() under combat logic under combat subroutines
-        
+
         //stuff that doesnt fit into other categories
         private void DisplayCurrentMenu() //this displays the info for the current menu 
         {
@@ -86,7 +88,7 @@ namespace NEAcomputingForm
             {
                 string temp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo()[i];
                 try
-                {   
+                {
                     if (temp == "0")
                     {
                         Output(i.ToString() + " leads nowhere ");
@@ -101,22 +103,22 @@ namespace NEAcomputingForm
                     if (temp.Contains("Levelset"))
                     {
                         string temp3 = temp.Substring(8);
-                        if (Convert.ToInt16(temp3) > levels.Count) 
+                        if (Convert.ToInt16(temp3) > levels.Count)
                         {
-                            Output(i.ToString()+ " "+ temp + " does not currently exist.");
-                        }  
-                        else 
-                        { 
+                            Output(i.ToString() + " " + temp + " does not currently exist.");
+                        }
+                        else
+                        {
                             Levelset temp2 = levels[Convert.ToInt16(temp3) - 1];
                             Output(i.ToString() + " " + temp + " Name: " + temp2.getName() + " Description: " + temp2.getDescription() + " Diffictulty: " + temp2.getDiff());
                         }
-                         
-                    } 
+
+                    }
                     else { Output(i.ToString() + " " + temp); }
                 }
             }
         }
-        
+
         private void Output(string output) // a custom text based output that I will use instead of the console
         {
             txtOut.Text += "\n" + output;//adds the text that is input to this function to a new line on txtOut
@@ -132,17 +134,18 @@ namespace NEAcomputingForm
                 }
                 else
                 {
-                    
+
                     string[] nextMenuNumbersTemp = CurrentMenu.GetMenuNumberWhichOptionLeadsTo();
-                    try 
+                    try
                     {
                         int i = Convert.ToInt32(nextMenuNumbersTemp[buttonNumber]);
-                        LoadNextMenu(i.ToString()); 
-                    } catch 
+                        LoadNextMenu(i.ToString());
+                    }
+                    catch
                     {
                         handleThings(nextMenuNumbersTemp[buttonNumber]);
                     }
-                    
+
 
                 }
             }
@@ -170,13 +173,13 @@ namespace NEAcomputingForm
         }
         private void LoadThingsIn() //calls on all of the different load subroutines to ensure everything is loaded in 
         {
-            tierBuffs.Add(0,("Bad", 0));
-            tierBuffs.Add(1,("Poor",0));
-            tierBuffs.Add(2,("Basic", 0));
-            tierBuffs.Add(3,("Standard", 0));
-            tierBuffs.Add(4,("Augmented", 0));
-            tierBuffs.Add(5,("Militarised", 0));
-            tierBuffs.Add(6,("Unimpressionable", 0));
+            tierBuffs.Add(0, ("Bad", 0));
+            tierBuffs.Add(1, ("Poor", 0));
+            tierBuffs.Add(2, ("Basic", 0));
+            tierBuffs.Add(3, ("Standard", 0));
+            tierBuffs.Add(4, ("Augmented", 0));
+            tierBuffs.Add(5, ("Militarised", 0));
+            tierBuffs.Add(6, ("Unimpressionable", 0));
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
@@ -189,7 +192,7 @@ namespace NEAcomputingForm
             }
             catch (Exception ex) { Output(ex.ToString() + " the first menu is not loading in please fix"); }
             Output("To begin press 0, you will be put into the base. I would suggest you equip some weapons in the specialist menu");
-            
+
         }
         private void LoadWeapons() //loads in all the weapons 
         {
@@ -263,17 +266,17 @@ namespace NEAcomputingForm
                 return null;
             }
         }
-        private void loadLevelsets() 
+        private void loadLevelsets()
         {
             DataSet database = new DataSet();
 
             string SQL = "SELECT LevelSets.*"
-                +"FROM LevelSets;";
+                + "FROM LevelSets;";
             //defines the SQL statement that gets the levelset data from the table
 
-           
+
             database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
-            for (int i = 0; i < database.Tables[0].Rows.Count;i++) 
+            for (int i = 0; i < database.Tables[0].Rows.Count; i++)
             {
                 levels[i].setTheName(database.Tables[0].Rows[i].Field<string>(1));
                 levels[i].setDifficulty(database.Tables[0].Rows[i].Field<string>(3));
@@ -293,17 +296,17 @@ namespace NEAcomputingForm
                 //SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
                 database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
 
-                
+
                 Level[] templv = new Level[5];
                 for (int i = 0; i < 5; i++)
                 {
-                    templv[i] = new Level(i + 1, levelSetNum+1);//adds all of the levels to templv
-                    templv[i].levelID = Convert.ToChar(i + 65) +""+ Convert.ToChar(levelSetNum+65);
+                    templv[i] = new Level(i + 1, levelSetNum + 1);//adds all of the levels to templv
+                    templv[i].levelID = Convert.ToChar(i + 65) + "" + Convert.ToChar(levelSetNum + 65);
                 }
-                
+
                 foreach (DataRow row in database.Tables[0].Rows)//iterates through all of the rows in the database (I only call upon one table)
-                { 
-                    
+                {
+
                     //(DEBUG) THIS IS NOT RUNNING, THIS NEEDS TO BE FIXED BEFORE I CAN TEST THE COMBAT SYSTEM *****************
 
                     int enemyID = row.Field<int>(0);//these lines put all of the info into temporary variables
@@ -312,7 +315,7 @@ namespace NEAcomputingForm
                     int enemyDodgeChance = row.Field<int>(3);
                     int enemyAim = row.Field<int>(4);
                     int enemyLevel = row.Field<int>(5);
-                    Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim,weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
+                    Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
                 }
                 /*
@@ -375,7 +378,7 @@ namespace NEAcomputingForm
 
 
         //Handle save/load system
-        private SaveLoad createSaveLoadFile() 
+        private SaveLoad createSaveLoadFile()
         {
             SaveLoad saveLoad = new SaveLoad();
 
@@ -387,13 +390,13 @@ namespace NEAcomputingForm
                 unlockedWeapons.Add(weapon.getName());
             }
             saveLoad.unlockedWeapons = unlockedWeapons;
-            
+
             List<string> unlockedLevels = new List<string>();
-            foreach (Levelset levelset in levels) 
+            foreach (Levelset levelset in levels)
             {
-                foreach (Level level in levelset.GetLevels()) 
+                foreach (Level level in levelset.GetLevels())
                 {
-                    if (level.unlocked) 
+                    if (level.unlocked)
                     {
                         unlockedLevels.Add(level.levelID);
                     }
@@ -401,7 +404,7 @@ namespace NEAcomputingForm
             }
             saveLoad.unlockedLevels = unlockedLevels;
 
-            List<string> specialistNames = new List<string>(); 
+            List<string> specialistNames = new List<string>();
             List<int> strengths = new List<int>();
             List<int> perceptions = new List<int>();
             List<int> Endurances = new List<int>();
@@ -409,8 +412,8 @@ namespace NEAcomputingForm
             List<int> Agilities = new List<int>();
             List<int> Lucks = new List<int>();
 
-            foreach (Specialist specialist in team.GetSquad()) 
-            { 
+            foreach (Specialist specialist in team.GetSquad())
+            {
                 specialistNames.Add(specialist.getName());
                 strengths.Add(specialist.GetStrength());
                 perceptions.Add(specialist.GetPerception());
@@ -429,7 +432,7 @@ namespace NEAcomputingForm
             saveLoad.trainingTokens = Secretbase.getTrainingTokens();
             return saveLoad;
         } //loads all of the data to be saved into the saveload class
-        private void SaveProgress(SaveLoad temp) 
+        private void SaveProgress(SaveLoad temp)
         {
             string filename = temp.saveName + ".json";
             if (!File.Exists(@"SaveFolders\" + filename))
@@ -440,25 +443,25 @@ namespace NEAcomputingForm
             }
             Output("Saving file");
             string file = JsonConvert.SerializeObject(temp);
-            
-            using (StreamWriter Fred = new StreamWriter(@"SavesFolder\"+filename)) 
+
+            using (StreamWriter Fred = new StreamWriter(@"SavesFolder\" + filename))
             {
                 Fred.Write(file);
-            
+
             }
-                Output(file);
-        
+            Output(file);
+
         } //uses the class to save the data into a json file
         private void LoadProgress(string documentName) //when it is done it should load the progress from a json file
         {
             try
             {
-                string file =  File.ReadAllText(@"SavesFolder\" + documentName+".json");
+                string file = File.ReadAllText(@"SavesFolder\" + documentName + ".json");
                 SaveLoad temp = new SaveLoad();
                 temp = JsonConvert.DeserializeObject<SaveLoad>(file);
-                int i =0;
+                int i = 0;
                 team = new Squad(temp.saveName);
-                foreach (string name in temp.specialistNames) 
+                foreach (string name in temp.specialistNames)
                 {
                     Specialist specialist = new Specialist(name);
                     specialist.SetStrength(temp.specialistStrengths[i]);
@@ -470,18 +473,18 @@ namespace NEAcomputingForm
                     i++;
                     team.AddToSquad(specialist);
                 }
-                foreach (Levelset levelset in levels) 
+                foreach (Levelset levelset in levels)
                 {
-                    foreach (Level level in levelset.GetLevels()) 
-                    { 
+                    foreach (Level level in levelset.GetLevels())
+                    {
                         level.unlocked = false;
-                        if (temp.unlockedLevels.Contains(level.levelID)) 
+                        if (temp.unlockedLevels.Contains(level.levelID))
                         {
                             level.unlocked = true;
                         }
-                    }                         
+                    }
                 }
-                foreach (Weapon weapon in weaponshop.getShopInventory()) 
+                foreach (Weapon weapon in weaponshop.getShopInventory())
                 {
                     if (temp.unlockedWeapons.Contains(weapon.getName()))
                     {
@@ -490,14 +493,14 @@ namespace NEAcomputingForm
                     else { weapon.setUnowned(); }
                 }
                 Secretbase.addTrainingTokens(temp.trainingTokens - Secretbase.getTrainingTokens());
-                
+
             }
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
         }
 
 
         //menus and their handling
-        private void handleThings(string input) 
+        private void handleThings(string input)
         {
             switch (input)
             {
@@ -520,12 +523,12 @@ namespace NEAcomputingForm
                 case "Luck":
                     specialistMenuHandle(8); break;
                 case "Cancel":
-                    CurrentMenu = CurrentMenu.GoToNextMenu("1",CurrentMenu); 
-                    DisplayCurrentMenu(); 
+                    CurrentMenu = CurrentMenu.GoToNextMenu("1", CurrentMenu);
+                    DisplayCurrentMenu();
                     break;
                 case "Levelset1":
                     selectedLevelset = 1;
-                    CurrentMenu = CurrentMenu.GoToNextMenu("9",CurrentMenu);
+                    CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
                     DisplayCurrentMenu();
                     break;
                 case "Levelset2":
@@ -610,11 +613,45 @@ namespace NEAcomputingForm
                 case "Load":
                     LoadProgress(team.getName()); ;
                     break;
+                case "Sharp":
+                    handleWeaponChanges("Sharp");
+                    break;
+                case "Blunt":
+                    handleWeaponChanges("Blunt");
+                    break;
+                case "Ballistic":
+                    handleWeaponChanges("Ballistic");
+                    break;
+                case "Explosive":
+                    handleWeaponChanges("Explosive");
+                    break;
+                case "Melee":
+                    CurrentMenu = CurrentMenu.GoToNextMenu("10", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
+                case "Ranged":
+                    CurrentMenu = CurrentMenu.GoToNextMenu("11", CurrentMenu);
+                    DisplayCurrentMenu();
+                    break;
+                case "Weapon1":
+
+                    break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
+
+        private void handleWeaponChanges(string weaponType)
+        {
+            List<Weapon> weaponsOfCorrectType = new List<Weapon>();
+            foreach (Weapon weapon in Secretbase.GetWeapons())
+            {
+                if (weapon.getDamageType1().Equals(weaponType)) { weaponsOfCorrectType.Add(weapon); }
+            }
+            CurrentMenu = CurrentMenu.GoToNextMenu("12", CurrentMenu);
+            DisplayCurrentMenu();
+        }
         private void specialistMenuHandle(int input)
         {
-            if (currentSpecialist==null) { currentSpecialist = team.GetSquad()[0]; }
+            if (currentSpecialist == null) { currentSpecialist = team.GetSquad()[0]; }
             if (input == 0)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
@@ -633,10 +670,10 @@ namespace NEAcomputingForm
                 CurrentMenu = CurrentMenu.GoToNextMenu("6", CurrentMenu);
                 DisplayCurrentMenu();
             }
-            else if (input == 3 && Secretbase.getTrainingTokens() >= 1) 
+            else if (input == 3 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetStrength(team.GetSquad()[i].GetStrength()+10);
+                team.GetSquad()[i].SetStrength(team.GetSquad()[i].GetStrength() + 10);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 4 && Secretbase.getTrainingTokens() >= 1)
@@ -671,41 +708,44 @@ namespace NEAcomputingForm
             }
 
         } //handles all of the menu inputs related to the specialists
-        private void levelSelect() 
+        private void levelSelect()
         {
-            if (selectedLevelset == null||selectedLevelset==999)
+            if (selectedLevelset == null || selectedLevelset == 999)
             {
                 CurrentMenu = CurrentMenu.GoToNextMenu("7", CurrentMenu);
                 DisplayCurrentMenu();
                 for (int i = 1; i < 10; i++)
                 {
-                    try { 
+                    try
+                    {
                         Output("Level set " + i + " name:" + levels[i].getName() + "Description" + levels[i].getDescription());
-                    }catch (Exception e) { }
+                    }
+                    catch (Exception e) { }
                 }
             }
-            else if (selectedLevel==null||selectedLevel==999) 
+            else if (selectedLevel == null || selectedLevel == 999)
             {
                 CurrentMenu = CurrentMenu.GoToNextMenu("8", CurrentMenu);
                 DisplayCurrentMenu();
                 for (int i = 1; i < 6; i++)
                 {
-                    try 
+                    try
                     {
-                        Output("Level number:" + i  + " Unlocked: "+ levels[selectedLevelset - 1].GetLevels()[i].unlocked);
-                    }catch (Exception e) { }
+                        Output("Level number:" + i + " Unlocked: " + levels[selectedLevelset - 1].GetLevels()[i].unlocked);
+                    }
+                    catch (Exception e) { }
                 }
             }
-        
-        
+
+
         } // performs the logic that allows the player to select which levelset and which level
 
         //combat subroutines
 
-                //player combat stuff
+        //player combat stuff
         private void playerCombatTurn() // the display side of the player turn
         {
- 
+
             playerTurnNext = false;
             int numOfSpecialists = team.GetSquad().Count;
             List<Specialist> conciousSpecialists = new List<Specialist>();
@@ -799,7 +839,7 @@ namespace NEAcomputingForm
             playerTurn = false;
             enemyTurn = true;
         }
-        
+
         private bool checkIfPlayerWin()
         {
             int count = 0;
@@ -807,8 +847,8 @@ namespace NEAcomputingForm
             {
                 if (enemy.getHealth() <= 0) count++;
             }
-            if (count == currentlevel.getEnemyList().Count) {if (selectedLevel<5) { levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; } return true; }
-            
+            if (count == currentlevel.getEnemyList().Count) { if (selectedLevel < 5) { levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; } return true; }
+
             return false;
         } //a function to see if the player defeated all the enemies and also unlock the next level where relevant
         private bool checkIfPlayerLost()
@@ -823,7 +863,7 @@ namespace NEAcomputingForm
             return false;
         }  //a function to see if the player has no specialists left
 
-                //enemy combat stuff
+        //enemy combat stuff
         private void enemyCombatTurn()
         {
             foreach (Enemy enemy in currentlevel.getEnemyList())
@@ -853,8 +893,8 @@ namespace NEAcomputingForm
 
 
         } //performs the combat turn of the enemy
-                
-                //combat logic
+
+        //combat logic
         private void CombatTick()
         {
             llbCombat.Text = "Yes";
@@ -873,7 +913,7 @@ namespace NEAcomputingForm
                 enemyTurn = false;
                 llbCombat.Text = "No";
                 Output("Player lost");
-                CurrentMenu = CurrentMenu.GoToNextMenu("9",CurrentMenu);
+                CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
             } // checks to see if the player has lost
             if (checkIfPlayerWin())
             {
@@ -899,12 +939,12 @@ namespace NEAcomputingForm
 
         }//performs the combat logic every "tick" (1 ms)
 
-        private void startCombat() 
+        private void startCombat()
         {
             try
             {
                 currentlevel = levels[selectedLevelset - 1].GetLevels()[selectedLevel - 1];
-                if (currentlevel.unlocked||selectedLevel==1)
+                if (currentlevel.unlocked || selectedLevel == 1)
                 {
                     currentlevel.unlocked = true;
                     inCombat = true;
@@ -914,11 +954,11 @@ namespace NEAcomputingForm
                 }
                 else { Output("This level is currently locked"); }
             }
-            catch (Exception e) 
-            { 
+            catch (Exception e)
+            {
                 Output("Please select a levelset and a level before entering combat.");
-                Output("Selected levelset:"+selectedLevelset);
-                Output("Selected level:"+selectedLevel);
+                Output("Selected levelset:" + selectedLevelset);
+                Output("Selected level:" + selectedLevel);
             }
         }
 
@@ -955,12 +995,12 @@ namespace NEAcomputingForm
             }
             if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
             if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
-            if (buttonNumber == 8) 
+            if (buttonNumber == 8)
             {
                 var temp = createSaveLoadFile();
-                SaveProgress(temp); 
+                SaveProgress(temp);
             }
-            if (buttonNumber==9) 
+            if (buttonNumber == 9)
             {
                 LoadProgress(team.getName());
             }
@@ -968,8 +1008,8 @@ namespace NEAcomputingForm
             {
                 team.changeName(debugStringAccess);
             }
-            if (buttonNumber==11) { Secretbase.addTrainingTokens(10); }
-            if (buttonNumber==12) { currentlevel.unlocked = true; }
+            if (buttonNumber == 11) { Secretbase.addTrainingTokens(10); }
+            if (buttonNumber == 12) { currentlevel.unlocked = true; }
         } //the function that allows the debug menu to do stuff in the main form
         private void btnOpenDebug_Click(object sender, EventArgs e)
         {
@@ -1004,15 +1044,19 @@ namespace NEAcomputingForm
         }//among us (this is a temporary debug line
 
         //shop and other logistics
-        private void buyWeapon(Weapon purchasedweapon) 
+        private void buyWeapon(Weapon purchasedweapon)
         {
-            if (purchasedweapon.checkIfOwned()) 
-            { 
-                
+            if (purchasedweapon.checkIfOwned())
+            {
+
             }
-        
+
         }
-        
+
+        private void llbCombat_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     //From here starts the classes which I use in Form1

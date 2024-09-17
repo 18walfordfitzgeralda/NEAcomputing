@@ -152,6 +152,7 @@
             llbCombat.Size = new Size(31, 15);
             llbCombat.TabIndex = 23;
             llbCombat.Text = "flase";
+            llbCombat.Click += llbCombat_Click;
             // 
             // btnOpenDebug
             // 
