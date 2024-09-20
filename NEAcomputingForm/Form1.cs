@@ -31,6 +31,7 @@ namespace NEAcomputingForm
         string gamestate = "Loading";// a string that can be accessed anywhere in form 1
         Weapon selectedWeapon = new Weapon("SelectedWeaponPlaceHolder", "0", "0", 0, 0, 0, 0);
         int selectedSlot = 999;
+        string selectedType = "";
 
         //all of the boollean values that make combat work
         bool inCombat = false;
@@ -623,6 +624,7 @@ namespace NEAcomputingForm
                     handleWeaponChanges("Ballistic");
                     break;
                 case "Explosive":
+                    
                     handleWeaponChanges("Explosive");
                     break;
                 case "Melee":
@@ -634,13 +636,88 @@ namespace NEAcomputingForm
                     DisplayCurrentMenu();
                     break;
                 case "Weapon1":
-
+                    selectWeapon(1);
+                    break;
+                case "Weapon2":
+                    selectWeapon(2);
+                    break;
+                case "Weapon3":
+                    selectWeapon(3);
+                    break;
+                case "Weapon4":
+                    selectWeapon(4);
+                    break;
+                case "Weapon5":
+                    selectWeapon(5);
+                    break;
+                case "Weapon6":
+                    selectWeapon(6);
+                    break;
+                case "Weapon7":
+                    selectWeapon(7);
+                    break;
+                case "Weapon8":
+                    selectWeapon(8);
+                    break;
+                case "Weapon9":
+                    selectWeapon(9);
+                    break;
+                case "Slot1":
+                    selectSlot(1);
+                    break;
+                case "Slot2":
+                    selectSlot(2);
+                    break;
+                case "Slot3":
+                    selectSlot(3);
+                    break;
+                case "Slot4":
+                    selectSlot(4);
+                    break;
+                case "Slot5":
+                    selectSlot(5);
                     break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
 
+        private void selectWeapon(int num) 
+        { 
+            List<Weapon> weaponsInCategory = new List<Weapon>();
+            foreach (Weapon weapon in Secretbase.GetWeapons()) 
+            {
+                if (weapon.getDamageType1().Equals(selectedType)) 
+                {
+                    weaponsInCategory.Add(weapon);
+                }
+            
+            }
+            if (num > weaponsInCategory.Count)
+            { }
+            else 
+            { 
+              selectedWeapon = weaponsInCategory[num-1];
+            }
+
+            CurrentMenu = CurrentMenu.GoToNextMenu("13", CurrentMenu);
+            DisplayCurrentMenu();
+
+        }
+
+        private void selectSlot(int num) 
+        {
+                 selectedSlot = num;
+                 Output("Putting the weapon in the slot");
+                 putWeaponInSlot();
+        }
+
+        private void putWeaponInSlot() 
+        {
+            currentSpecialist.SetWeapon(selectedSlot,selectedWeapon);
+            Output($"{selectedWeapon.getName()} has been put in slot {selectedSlot.ToString()} of {currentSpecialist.getName()}");
+        }
         private void handleWeaponChanges(string weaponType)
         {
+            selectedType = weaponType;
             List<Weapon> weaponsOfCorrectType = new List<Weapon>();
             foreach (Weapon weapon in Secretbase.GetWeapons())
             {
@@ -1079,7 +1156,7 @@ namespace NEAcomputingForm
             catch
             (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
                 return null;
             }
 
@@ -1098,7 +1175,7 @@ namespace NEAcomputingForm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                //Console.WriteLine(e.ToString());
                 return null;
             }
         }
@@ -1400,6 +1477,10 @@ namespace NEAcomputingForm
         {
             this.baggedWeapons[index] = Secretbase.GetWeapons()[i];
 
+        }
+        public void SetWeapon(int index, Weapon weapon) 
+        {
+            this.baggedWeapons[index] = weapon;
         }
         public void EmptyWeaponBag(Weapon weapon) //sets all of the weapons in the weapon bag to the input weapon, intended for use with the "None" weapon
         {
