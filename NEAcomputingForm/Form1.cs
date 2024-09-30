@@ -691,19 +691,34 @@ namespace NEAcomputingForm
                     break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
+        private void buyWeapon(Weapon purchasedweapon)
+        {
+            if (purchasedweapon.checkIfOwned())
+            {
 
+            }
+            else
+            {
+                Secretbase.addWeapon(purchasedweapon);
+            }
+
+        }
         private void outputWeaponListForShop(string weaponType) 
         {
+            int count = 1;
             foreach (Weapon weapon in weaponshop.getShopInventory()) 
             {
                 if (weaponType.Equals(weapon.GetType())) 
                 {
-                 
-                
+                    Output(count.ToString()+weapon.getName());
+                    count++;
                 }
             
             }
-            
+        }
+        private void selectWeaponBuy(int slotNumber) 
+        { 
+        
         
         
         }
@@ -1148,18 +1163,7 @@ namespace NEAcomputingForm
         }//among us (this is a temporary debug line
 
         //shop and other logistics
-        private void buyWeapon(Weapon purchasedweapon)
-        {
-            if (purchasedweapon.checkIfOwned())
-            {
-
-            }
-            else 
-            { 
-                Secretbase.addWeapon(purchasedweapon);
-            }
-
-        }
+        
 
         private void llbCombat_Click(object sender, EventArgs e)
         {
