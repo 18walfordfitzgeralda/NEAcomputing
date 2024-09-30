@@ -677,9 +677,36 @@ namespace NEAcomputingForm
                 case "Slot5":
                     selectSlot(5);
                     break;
+                case "BuySharp":
+                    outputWeaponListForShop("Sharp");
+                    break;
+                case "BuyBlunt":
+                    outputWeaponListForShop("Blunt");
+                    break;
+                case "BuyExplosive":
+                    outputWeaponListForShop("Explosive");
+                    break;
+                case "BuyBallistic":
+                    outputWeaponListForShop("Ballistic");
+                    break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
 
+        private void outputWeaponListForShop(string weaponType) 
+        {
+            foreach (Weapon weapon in weaponshop.getShopInventory()) 
+            {
+                if (weaponType.Equals(weapon.GetType())) 
+                {
+                 
+                
+                }
+            
+            }
+            
+        
+        
+        }
         private void selectWeapon(int num) 
         { 
             List<Weapon> weaponsInCategory = new List<Weapon>();
@@ -1126,6 +1153,10 @@ namespace NEAcomputingForm
             if (purchasedweapon.checkIfOwned())
             {
 
+            }
+            else 
+            { 
+                Secretbase.addWeapon(purchasedweapon);
             }
 
         }
