@@ -71,7 +71,7 @@ namespace NEAcomputingForm
                     }
 
                 }
-                if ((!foundItem) && temp.checkIfOwned()) { Secretbase.addWeapon(temp); }
+                if ((!foundItem) && temp.checkIfOwned()) { Secretbase.addWeapon(temp, tierBuffs); }
 
             }
 
@@ -202,10 +202,10 @@ namespace NEAcomputingForm
                 //loads in the players starting weapons
                 Weapon knife = new Weapon("Knife", "Sharp", "None", 10, 0, 1, 0);
                 knife.setOwned();
-                Secretbase.addWeapon(knife);
+                Secretbase.addWeapon(knife,tierBuffs);
                 Weapon Club = new Weapon("Club", "Blunt", "None", 20, 0, 2, 0);
                 Club.setOwned();
-                Secretbase.addWeapon(Club);
+                Secretbase.addWeapon(Club, tierBuffs);
 
 
                 //loads in the rest of the weapons which will be seen in the shop from the txt file
@@ -695,11 +695,11 @@ namespace NEAcomputingForm
         {
             if (purchasedweapon.checkIfOwned())
             {
-
+                Secretbase.addWeapon(purchasedweapon, tierBuffs);
             }
             else
             {
-                Secretbase.addWeapon(purchasedweapon);
+                Secretbase.addWeapon(purchasedweapon, tierBuffs);
             }
 
         }
@@ -716,11 +716,19 @@ namespace NEAcomputingForm
             
             }
         }
-        private void selectWeaponBuy(int slotNumber) 
-        { 
-        
-        
-        
+        private void selectWeaponBuy(int slotNumber,string weaponType) 
+        {
+            List<Weapon> weapons = new List<Weapon>();
+            foreach (Weapon weapon in weaponshop.getShopInventory())
+            {
+                if (weaponType.Equals(weapon.GetType()))
+                {
+                    weapons.Add(weapon);
+                }
+
+            }
+
+
         }
         private void selectWeapon(int num) 
         { 
@@ -1269,9 +1277,18 @@ namespace NEAcomputingForm
         {
             return this.weapons;
         }
-        public void addWeapon(Weapon Weapon)//adds the item to the list of weapons
+        public void addWeapon(Weapon Weapon, Dictionary<int, (string, int)> tierbuffs)//adds the item to the list of weapons
         {
-            this.weapons.Add(Weapon);
+            bool temp100ish = false;
+            int count = 0;
+            foreach (Weapon weapon in this.weapons) { if (weapon.getName().Equals(Weapon.getName())) { temp100ish = true; } ;count++; }
+            if (temp100ish)
+            {
+                weapons[count].increaseTier(tierbuffs);
+            }
+            else {
+                this.weapons.Add(Weapon);
+            }
         }
         public void payment(int cost)//removes money
         {
