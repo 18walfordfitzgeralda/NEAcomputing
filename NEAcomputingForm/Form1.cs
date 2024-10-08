@@ -181,12 +181,14 @@ namespace NEAcomputingForm
             tierBuffs.Add(4, ("Augmented", 0));
             tierBuffs.Add(5, ("Militarised", 0));
             tierBuffs.Add(6, ("Unimpressionable", 0));
+            
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
             loadLevels(1);//loads in the levels in the level set specified
             loadLevelsets();//loads in the name difficulty etc for all of the level sets
             team.AddToSquad(new Specialist("Debug man"));
+            if (currentSpecialist == null) { currentSpecialist = team.GetSquad().First();  }
             try
             {
                 CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
@@ -494,7 +496,7 @@ namespace NEAcomputingForm
                     else { weapon.setUnowned(); }
                 }
                 Secretbase.addTrainingTokens(temp.trainingTokens - Secretbase.getTrainingTokens());
-
+                currentSpecialist = team.GetSquad().First();
             }
             catch (Exception ex) { Output("Unable to load progress:" + ex.Message); }
         }
@@ -692,16 +694,8 @@ namespace NEAcomputingForm
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
         private void buyWeapon(Weapon purchasedweapon)
-        {
-            if (purchasedweapon.checkIfOwned())
-            {
+        {  
                 Secretbase.addWeapon(purchasedweapon, tierBuffs);
-            }
-            else
-            {
-                Secretbase.addWeapon(purchasedweapon, tierBuffs);
-            }
-
         }
         private void outputWeaponListForShop(string weaponType) 
         {
@@ -747,9 +741,11 @@ namespace NEAcomputingForm
             { 
               selectedWeapon = weaponsInCategory[num-1];
             }
-
+            
             CurrentMenu = CurrentMenu.GoToNextMenu("13", CurrentMenu);
             DisplayCurrentMenu();
+            
+            
 
         }
 
@@ -762,8 +758,12 @@ namespace NEAcomputingForm
 
         private void putWeaponInSlot() 
         {
-            currentSpecialist.SetWeapon(selectedSlot,selectedWeapon);
-            Output($"{selectedWeapon.getName()} has been put in slot {selectedSlot.ToString()} of {currentSpecialist.getName()}");
+            if (selectedWeapon.getName() != "SelectedWeaponPlaceHolder")
+            {
+                currentSpecialist.SetWeapon(selectedSlot, selectedWeapon);
+                Output($"{selectedWeapon.getName()} has been put in slot {selectedSlot.ToString()} of {currentSpecialist.getName()}");
+            }
+            else { Output("There was no weapon selected, please try again"); }
         }
         private void handleWeaponChanges(string weaponType)
         {
@@ -773,8 +773,14 @@ namespace NEAcomputingForm
             {
                 if (weapon.getDamageType1().Equals(weaponType)) { weaponsOfCorrectType.Add(weapon); }
             }
+            
             CurrentMenu = CurrentMenu.GoToNextMenu("12", CurrentMenu);
             DisplayCurrentMenu();
+            int count = 0;
+            foreach (Weapon weapon in weaponsOfCorrectType)
+            {
+                Output("Weapon " + (count + 1).ToString() + ":" + weapon.getName());
+            }
         }
         private void specialistMenuHandle(int input)
         {
@@ -1532,7 +1538,7 @@ namespace NEAcomputingForm
         }
         public void SetWeapon(int index, Weapon weapon) 
         {
-            this.baggedWeapons[index] = weapon;
+            this.baggedWeapons[index-1] = weapon;
         }
         public void EmptyWeaponBag(Weapon weapon) //sets all of the weapons in the weapon bag to the input weapon, intended for use with the "None" weapon
         {
