@@ -691,35 +691,95 @@ namespace NEAcomputingForm
                 case "BuyBallistic":
                     outputWeaponListForShop("Ballistic");
                     break;
+                case "Buy Weapon 1":
+                    selectWeaponBuy(1);
+                    break;
+                case "Buy Weapon 2":
+                    selectWeaponBuy(2);
+                    break;
+                case "Buy Weapon 3":
+                    selectWeaponBuy(3);
+                    break;
+                case "Buy Weapon 4":
+                    selectWeaponBuy(4);
+                    break;
+                case "Buy Weapon 5":
+                    selectWeaponBuy(5);
+                    break;
+                case "Buy Weapon 6":
+                    selectWeaponBuy(6);
+                    break;
+                case "Buy Weapon 7":
+                    selectWeaponBuy(7);
+                    break;
+                case "Buy Weapon 8":
+                    selectWeaponBuy(8);
+                    break;
+                case "Buy Weapon 9":
+                    selectWeaponBuy(9);
+                    break;
             } //due to the large number of cases that this is handling I have decided to use a switch case instead of a if else if else if etc which I usually prefer
         } //handles all of the non integer inputs from menus
         private void buyWeapon(Weapon purchasedweapon)
-        {  
-                Secretbase.addWeapon(purchasedweapon, tierBuffs);
+        {
+            for (int i=0;i<Secretbase.GetWeapons().Count-1;i++) 
+            {
+                if (Secretbase.GetWeapons()[i].getName().Equals(purchasedweapon.getName()) && Secretbase.GetWeapons()[i].checkIfOwned())
+                {
+                    Output("The tier of the weapon has increased");
+                } else if (Secretbase.GetWeapons()[i].getName().Equals(purchasedweapon.getName())) 
+                {
+                    Output("The weapon has been purchased");
+                }
+            }
+            Secretbase.addWeapon(purchasedweapon, tierBuffs);
+            CurrentMenu = CurrentMenu.GoToNextMenu("2", CurrentMenu);
+            DisplayCurrentMenu();
         }
+
         private void outputWeaponListForShop(string weaponType) 
         {
+            selectedType = weaponType;
+            
+            CurrentMenu = CurrentMenu.GoToNextMenu("15", CurrentMenu);
+            DisplayCurrentMenu();
+            outputWeaponNameForShop();
+        }
+        public void outputWeaponNameForShop() 
+        {
+
             int count = 1;
             foreach (Weapon weapon in weaponshop.getShopInventory()) 
             {
-                if (weaponType.Equals(weapon.GetType())) 
+                if (weapon.getDamageType1().Equals(selectedType))
                 {
-                    Output(count.ToString()+weapon.getName());
+                    Output("weapon" + count.ToString() + ": " + weapon.getName());
                     count++;
                 }
-            
             }
+        
         }
-        private void selectWeaponBuy(int slotNumber,string weaponType) 
+        private void selectWeaponBuy(int slotNumber) 
         {
+            int count = 1;
             List<Weapon> weapons = new List<Weapon>();
             foreach (Weapon weapon in weaponshop.getShopInventory())
             {
-                if (weaponType.Equals(weapon.GetType()))
+                if (weapon.getDamageType1().Equals(selectedType))
                 {
                     weapons.Add(weapon);
                 }
-
+                
+            }
+            if (slotNumber <= weapons.Count)
+            {
+                buyWeapon(weapons[slotNumber - 1]);
+            }
+            else 
+            { 
+                Output("That choice does not have a weapon please try again"); 
+                CurrentMenu = CurrentMenu.GoToNextMenu("2", CurrentMenu);
+                DisplayCurrentMenu();
             }
 
 
@@ -1008,9 +1068,9 @@ namespace NEAcomputingForm
                     {
                         if (team.GetSquad()[i].isConcious())
                         {
-                            team.GetSquad()[i].Damage(weapon.getType1Damage(), weapon.getDamageType1());
+                            team.GetSquad()[i].Damage((weapon.getType1Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType1());
                             Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
-                            team.GetSquad()[i].Damage(weapon.getType2Damage(), weapon.getDamageType2());
+                            team.GetSquad()[i].Damage((weapon.getType2Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType2());
                             i += 999;
                         }
 
@@ -1363,6 +1423,7 @@ namespace NEAcomputingForm
             this.tierNumber += 1;
             this.tier = tierbuffs[tierNumber].Item1;
         }
+        public int getTier() { return this.tierNumber; }
 
     }
     class WeaponShop // used to make the list of weapons in the shop global without having a list which can easily be messed up by mistake 
