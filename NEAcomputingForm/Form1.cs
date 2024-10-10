@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Xml;
 using Newtonsoft.Json;
+using System.Windows.Forms.Design;
 namespace NEAcomputingForm
 {
 
@@ -1066,7 +1067,7 @@ namespace NEAcomputingForm
                     Weapon weapon = enemy.GetWeapon();
                     for (int i = 0; i < team.GetSquad().Count; i++)
                     {
-                        if (team.GetSquad()[i].isConcious())
+                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim()))
                         {
                             team.GetSquad()[i].Damage((weapon.getType1Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType1());
                             Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
@@ -1086,6 +1087,14 @@ namespace NEAcomputingForm
 
 
         } //performs the combat turn of the enemy
+
+        private bool checkIfHit(int aim) 
+        {
+            Random random = new Random();
+            if (random.Next(0,100)>=aim) { return true; }
+            return false;
+        
+        }
 
         //combat logic
         private void CombatTick()
@@ -1652,6 +1661,7 @@ namespace NEAcomputingForm
             return false;
         }
         public Weapon GetWeapon() { return this.EnemyWeapon; }
+        public int GetAim() { return this.aim; }
     }
     class Level //template for levels 
     {
@@ -1877,12 +1887,12 @@ namespace NEAcomputingForm
     /* 
      To do list:                                priority (lower higher priority)
     
-    Convert Debug buttons into a dev menu                        7
+    
     Fill out files                                               5
     Polish stuff                                                 9
     Enhance Save load system                                     6
     Add comments                                                10
-    Allow user to change weapons for specialists                 3
+    
     Improve and enhance weapon system (including above)          1
      */
 }
