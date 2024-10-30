@@ -33,6 +33,7 @@ namespace NEAcomputingForm
         Weapon selectedWeapon = new Weapon("SelectedWeaponPlaceHolder", "0", "0", 0, 0, 0, 0);
         int selectedSlot = 999;
         string selectedType = "";
+        const int specialistStatToPercentChanceConversion = 10;
 
         //all of the boollean values that make combat work
         bool inCombat = false;
@@ -1009,18 +1010,46 @@ namespace NEAcomputingForm
             }
             for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
             {
+                
                 if (!optionDone)
                 {
                     if (currentlevel.getEnemyList()[i].getHealth() > 0)
                     {
-                        int damage1resist = 1;
-                        int damage2resist = 1;
-                        if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
-                        if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+                        if ((checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception()/specialistStatToPercentChanceConversion))))|| checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) &&!checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance())) 
+                        {
+                            int damage1resist = 1;
+                            int damage2resist = 1;
+                            if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                            if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
 
-                        int damage1 = option.getOptionDamage1() / damage1resist;
-                        int damage2 = option.getOptionDamage2() / damage2resist;
-                        currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
+                            int damage1 = option.getOptionDamage1() / damage1resist;
+                            int damage2 = option.getOptionDamage2() / damage2resist;
+                            if (option.getOptionDamageType1() == "Sharp"|| option.getOptionDamageType1() == "Blunt") 
+                            {
+                                damage1 += Convert.ToInt16(currentSpecialist.GetStrength()/Convert.ToInt16(specialistStatToPercentChanceConversion*specialistStatToPercentChanceConversion))/damage1resist;
+                            }
+                            if (option.getOptionDamageType2() == "Sharp" || option.getOptionDamageType2() == "Blunt")
+                            {
+                                damage2 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion))/damage2resist;
+                            }
+                            currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
+                        }
+                        
+                        if (option.getOptionDamageType1() == "Explosive") 
+                        {
+                            int damage1resist = 4;
+                            if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; } 
+                            int damage1 = option.getOptionDamage1() / damage1resist;
+                            currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
+                        }
+                        if (option.getOptionDamageType2() == "Explosive") 
+                        {
+                            int damage2resist = 4;
+                            if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+                            int damage2 = option.getOptionDamage2() / damage2resist;
+                            currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
+                        }
+                        
 
                     }
 
@@ -1060,6 +1089,7 @@ namespace NEAcomputingForm
         //enemy combat stuff
         private void enemyCombatTurn()
         {
+            
             foreach (Enemy enemy in currentlevel.getEnemyList())
             {
                 if (enemy.getHealth() > 0)
@@ -1067,7 +1097,7 @@ namespace NEAcomputingForm
                     Weapon weapon = enemy.GetWeapon();
                     for (int i = 0; i < team.GetSquad().Count; i++)
                     {
-                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim()))
+                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim())&&!(checkIfDodge(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetAgility()/specialistStatToPercentChanceConversion))))||checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion*1.5)))))))
                         {
                             team.GetSquad()[i].Damage((weapon.getType1Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType1());
                             Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
@@ -1091,9 +1121,21 @@ namespace NEAcomputingForm
         private bool checkIfHit(int aim) 
         {
             Random random = new Random();
-            if (random.Next(0,100)>=aim) { return true; }
+            if (random.Next(0,100)<=aim) { return true; }//the higher the aim the greater the chance to hit
             return false;
         
+        }
+        private bool checkIfLucky(int luck) 
+        {
+            Random random = new Random();
+            if (random.Next(0, 100) <= luck) { return true; }//the higher the luck the greater the chance to get lucky
+            return false;
+        }
+        private bool checkIfDodge(int dodgeChance) 
+        {
+            Random random = new Random();
+            if (random.Next(0, 100) <= dodgeChance) { return true; }//the higher the dodgeChance the greater the chance to dodge
+            return false;
         }
 
         //combat logic
@@ -1495,6 +1537,7 @@ namespace NEAcomputingForm
         public void startFight()
         {
             this.conscious = true;
+            this.maxHealth = 99 + Convert.ToInt32(Math.Round(Convert.ToDouble(this.endurance / 100)));
             this.Heal(999999, false);
 
         }
