@@ -1008,8 +1008,8 @@ namespace NEAcomputingForm
                 Output("Leaving combat");
 
             }
-            while (currentSpecialist.TryCombatOption(option))
-            {
+           
+            
                 for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
                 {
 
@@ -1017,42 +1017,44 @@ namespace NEAcomputingForm
                     {
                         if (currentlevel.getEnemyList()[i].getHealth() > 0)
                         {
-
-                            if ((checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance()))
-                            {
-                                int damage1resist = 1;
-                                int damage2resist = 1;
-                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
-                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
-
-                                int damage1 = option.getOptionDamage1() / damage1resist;
-                                int damage2 = option.getOptionDamage2() / damage2resist;
-                                if (option.getOptionDamageType1() == "Sharp" || option.getOptionDamageType1() == "Blunt")
+                            int maxNumberOfHits = Convert.ToInt16(currentSpecialist.getStamina() / option.getStaminaCost());
+                            //for (int t = 0; t<maxNumberOfHits;t+=option.getStaminaCost()) {
+                                if ((checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance()))
                                 {
-                                    damage1 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage1resist;
+                                    int damage1resist = 1;
+                                    int damage2resist = 1;
+
+                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+
+                                    int damage1 = (option.getOptionDamage1() / damage1resist);
+                                    int damage2 = (option.getOptionDamage2() / damage2resist);
+                                    if (option.getOptionDamageType1() == "Sharp" || option.getOptionDamageType1() == "Blunt")
+                                    {
+                                        damage1 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage1resist;
+                                    }
+                                    if (option.getOptionDamageType2() == "Sharp" || option.getOptionDamageType2() == "Blunt")
+                                    {
+                                        damage2 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage2resist;
+                                    }
+                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
                                 }
-                                if (option.getOptionDamageType2() == "Sharp" || option.getOptionDamageType2() == "Blunt")
+
+                                if (option.getOptionDamageType1() == "Explosive")
                                 {
-                                    damage2 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage2resist;
+                                    int damage1resist = 4;
+                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                                    int damage1 = option.getOptionDamage1() / damage1resist;
+                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
                                 }
-                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
-                            }
-
-                            if (option.getOptionDamageType1() == "Explosive")
-                            {
-                                int damage1resist = 4;
-                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
-                                int damage1 = option.getOptionDamage1() / damage1resist;
-                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
-                            }
-                            if (option.getOptionDamageType2() == "Explosive")
-                            {
-                                int damage2resist = 4;
-                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
-                                int damage2 = option.getOptionDamage2() / damage2resist;
-                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
-                            }
-
+                                if (option.getOptionDamageType2() == "Explosive")
+                                {
+                                    int damage2resist = 4;
+                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+                                    int damage2 = option.getOptionDamage2() / damage2resist;
+                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
+                                }
+                            //}
 
                         }
 
@@ -1061,8 +1063,8 @@ namespace NEAcomputingForm
                     }
 
 
+                
                 }
-            }
             playerTurn = false;
             enemyTurn = true;
         }
@@ -1525,15 +1527,13 @@ namespace NEAcomputingForm
             return this.name;
         }
 
-        public bool TryCombatOption(CombatOption combatOption)
+        public int getStamina()
         {
-            this.currentStamina -= combatOption.getStaminaCost();
-            if (this.currentStamina < 0)
-            {
-                this.currentStamina += combatOption.getStaminaCost();
-                return false;
-            }
-            return true;
+            return this.currentStamina;   
+        }
+        public void removeStamina(int num) 
+        {
+            this.currentStamina -= num;
         }
         public void resetCurrentStamina() 
         {
