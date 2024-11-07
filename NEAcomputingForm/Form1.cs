@@ -1019,7 +1019,8 @@ namespace NEAcomputingForm
                         {
                             int maxNumberOfHits = Convert.ToInt16(currentSpecialist.getStamina() / option.getStaminaCost());
                             //for (int t = 0; t<maxNumberOfHits;t+=option.getStaminaCost()) {
-                                if ((checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance()))
+                                bool hit = (checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance());
+                                if (hit)
                                 {
                                     int damage1resist = 1;
                                     int damage2resist = 1;
@@ -1040,14 +1041,14 @@ namespace NEAcomputingForm
                                     currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
                                 }
 
-                                if (option.getOptionDamageType1() == "Explosive")
+                                if (option.getOptionDamageType1() == "Explosive"&&!hit)
                                 {
                                     int damage1resist = 4;
                                     if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
                                     int damage1 = option.getOptionDamage1() / damage1resist;
                                     currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
                                 }
-                                if (option.getOptionDamageType2() == "Explosive")
+                                if (option.getOptionDamageType2() == "Explosive"&&!hit)
                                 {
                                     int damage2resist = 4;
                                     if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
