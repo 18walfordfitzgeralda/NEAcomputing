@@ -295,7 +295,7 @@ namespace NEAcomputingForm
                 DataSet database = new DataSet();
 
                 string SQL = "SELECT Enemies.*, Levels.LevelSetNum "
-                             + "FROM LevelsAndSetLink, LevelSets INNER JOIN(Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum "
+                             + "FROM LevelSets INNER JOIN(Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum "
                              + "WHERE(((Levels.LevelSetNum) = " + levelSetNum + "));";//defines the SQL statement that gets the enemy data from the table
 
                 //SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
@@ -1018,8 +1018,9 @@ namespace NEAcomputingForm
                         if (currentlevel.getEnemyList()[i].getHealth() > 0)
                         {
                             int maxNumberOfHits = Convert.ToInt16(currentSpecialist.getStamina() / option.getStaminaCost());
-                            //for (int t = 0; t<maxNumberOfHits;t+=option.getStaminaCost()) {
-                                bool hit = (checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance());
+                            for (int t = 0; t<maxNumberOfHits;t+=option.getStaminaCost()) {
+                                               
+                                bool hit = (checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion))))|| checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(Convert.ToDouble(currentSpecialist.GetLuck()) / (specialistStatToPercentChanceConversion * 1.5))))) )&&!checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance()) ;
                                 if (hit)
                                 {
                                     int damage1resist = 1;
@@ -1055,7 +1056,7 @@ namespace NEAcomputingForm
                                     int damage2 = option.getOptionDamage2() / damage2resist;
                                     currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
                                 }
-                            //}
+                            }
 
                         }
 
