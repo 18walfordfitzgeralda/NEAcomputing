@@ -46,6 +46,7 @@
             label2 = new Label();
             btnaddtokens = new Button();
             btnLockpick = new Button();
+            btnCrash = new Button();
             SuspendLayout();
             // 
             // btnClr
@@ -226,11 +227,22 @@
             btnLockpick.UseVisualStyleBackColor = true;
             btnLockpick.Click += btnLockpick_Click;
             // 
+            // btnCrash
+            // 
+            btnCrash.Location = new Point(2, 143);
+            btnCrash.Name = "btnCrash";
+            btnCrash.Size = new Size(193, 23);
+            btnCrash.TabIndex = 18;
+            btnCrash.Text = "Crash the game";
+            btnCrash.UseVisualStyleBackColor = true;
+            btnCrash.Click += btnCrash_Click;
+            // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnCrash);
             Controls.Add(btnLockpick);
             Controls.Add(btnaddtokens);
             Controls.Add(label2);
@@ -276,5 +288,6 @@
         private Label label2;
         private Button btnaddtokens;
         private Button btnLockpick;
+        private Button btnCrash;
     }
 }

@@ -94,5 +94,10 @@ namespace NEAcomputingForm
         {
             form1.DebugMenuAccess(12);
         }
+
+        private void btnCrash_Click(object sender, EventArgs e)
+        {
+            Convert.ToInt32("This should crash the game");
+        }
     }
 }

@@ -1945,6 +1945,7 @@ namespace NEAcomputingForm
     Polish stuff                                                 9
     Enhance Save load system                                     6
     Add comments                                                10
+    Fix combat system and database                               1
     
      */
 }
