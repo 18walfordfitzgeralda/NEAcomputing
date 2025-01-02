@@ -99,5 +99,43 @@ namespace NEAcomputingForm
         {
             Convert.ToInt32("This should crash the game");
         }
+
+        private void btnChangeTokens_Click(object sender, EventArgs e)
+        {
+            form1.debugStringAccess = txtDebugInput.Text;
+            form1.DebugMenuAccess(13);
+        }
+
+        private void btnChangeAmountTrained_Click(object sender, EventArgs e)
+        {
+            form1.debugStringAccess = txtDebugInput.Text;
+            form1.DebugMenuAccess(14);
+        }
+
+        private void btnChangeStatEff_Click(object sender, EventArgs e)
+        {
+            form1.debugStringAccess = txtDebugInput.Text;
+            form1.DebugMenuAccess(15);
+        }
+
+        private void btnResetFiles_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(16);
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(17);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(18);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            form1.DebugMenuAccess(19);
+        }
     }
 }

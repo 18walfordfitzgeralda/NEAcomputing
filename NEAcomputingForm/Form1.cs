@@ -34,6 +34,8 @@ namespace NEAcomputingForm
         int selectedSlot = 999;
         string selectedType = "";
         const int specialistStatToPercentChanceConversion = 10;
+        const int numberOfTrainingTokensOnWin = 10;
+        const int amountTrained = 10;
 
         //all of the boollean values that make combat work
         bool inCombat = false;
@@ -297,6 +299,10 @@ namespace NEAcomputingForm
                 string SQL = "SELECT Enemies.*, Levels.LevelSetNum "
                              + "FROM LevelSets INNER JOIN(Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum "
                              + "WHERE(((Levels.LevelSetNum) = " + levelSetNum + "));";//defines the SQL statement that gets the enemy data from the table
+
+                SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\n" +
+                    "FROM LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\n" +
+                    "WHERE (((Levels.LevelSetNum)="+levelSetNum.ToString()+"));";//just in case
 
                 //SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
                 database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
@@ -868,37 +874,37 @@ namespace NEAcomputingForm
             else if (input == 3 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetStrength(team.GetSquad()[i].GetStrength() + 10);
+                team.GetSquad()[i].SetStrength(team.GetSquad()[i].GetStrength() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 4 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetPerception(team.GetSquad()[i].GetPerception() + 10);
+                team.GetSquad()[i].SetPerception(team.GetSquad()[i].GetPerception() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 5 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetEndurance(team.GetSquad()[i].GetEndurance() + 10);
+                team.GetSquad()[i].SetEndurance(team.GetSquad()[i].GetEndurance() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 6 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetIntelligence(team.GetSquad()[i].GetIntelligence() + 10);
+                team.GetSquad()[i].SetIntelligence(team.GetSquad()[i].GetIntelligence() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 7 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetAgility(team.GetSquad()[i].GetAgility() + 10);
+                team.GetSquad()[i].SetAgility(team.GetSquad()[i].GetAgility() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
             else if (input == 8 && Secretbase.getTrainingTokens() >= 1)
             {
                 int i = team.GetSquad().IndexOf(currentSpecialist);
-                team.GetSquad()[i].SetLuck(team.GetSquad()[i].GetLuck() + 10);
+                team.GetSquad()[i].SetLuck(team.GetSquad()[i].GetLuck() + amountTrained);
                 Secretbase.removeTrainingToken();
             }
 
@@ -1078,7 +1084,15 @@ namespace NEAcomputingForm
             {
                 if (enemy.getHealth() <= 0) count++;
             }
-            if (count == currentlevel.getEnemyList().Count) { if (selectedLevel < 5) { levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; } return true; }
+            if (count == currentlevel.getEnemyList().Count) 
+            { 
+                if (selectedLevel < 5) 
+                { 
+                    levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; 
+                }
+                Secretbase.addTrainingTokens(numberOfTrainingTokensOnWin);
+                return true;
+            }
 
             return false;
         } //a function to see if the player defeated all the enemies and also unlock the next level where relevant
@@ -1262,7 +1276,121 @@ namespace NEAcomputingForm
             }
             if (buttonNumber == 11) { Secretbase.addTrainingTokens(10); }
             if (buttonNumber == 12) { currentlevel.unlocked = true; }
+            if (buttonNumber == 13) 
+            {
+                try 
+                {
+                    int temp = numberOfTrainingTokensOnWin;
+                    temp = Convert.ToInt32(debugStringAccess);
+                }catch 
+                {
+                    Output("Apologies an error has occured while converting that string into a number");
+                    Output("The number you have attempted to change has retained its value");
+                }
+
+            }
+            if (buttonNumber == 14)
+            {
+                try
+                {
+                    int temp = amountTrained;
+                    temp = Convert.ToInt32(debugStringAccess);
+                }
+                catch
+                {
+                    Output("Apologies an error has occured while converting that string into a number");
+                    Output("The number you have attempted to change has retained its value");
+                }
+
+            }
+            if (buttonNumber == 15)
+            {
+                try
+                {
+                    int temp = specialistStatToPercentChanceConversion;
+                    temp = Convert.ToInt32(debugStringAccess);
+                }
+                catch
+                {
+                    Output("Apologies an error has occured while converting that string into a number");
+                    Output("The number you have attempted to change has retained its value");
+                }
+
+            }
+            if (buttonNumber == 16) 
+            { 
+                ResetWeaponFile();
+                ResetMenuFile();
+                ResetLinesuFile();
+            }
+            if(buttonNumber == 17) { ResetWeaponFile(); }
+            if (buttonNumber == 18) { ResetMenuFile(); }
+            if (buttonNumber == 19) { ResetLinesuFile(); }
+
         } //the function that allows the debug menu to do stuff in the main form
+
+
+        private void ResetWeaponFile() 
+        {
+            string line;
+            string[] weaponTemp = new string[6];
+            using (StreamWriter sw = new StreamWriter("Weapons.txt"))
+            {
+                
+                using (StreamReader sr = new StreamReader("WeaponsBackup.txt"))
+                {
+                    line = sr.ReadLine();
+                    while (line != null)
+                    {
+                        sw.WriteLine(line);
+                        line = sr.ReadLine();
+                    }
+
+                }
+            }
+        }
+        private void ResetMenuFile()
+        {
+           
+            string line;
+            string[] weaponTemp = new string[6];
+            using (StreamWriter sw = new StreamWriter("Menus.txt"))
+            {
+
+                using (StreamReader sr = new StreamReader("MenusBackup.txt"))
+                {
+                    line = sr.ReadLine();
+                    while (line != null)
+                    {
+                        sw.WriteLine(line);
+                        line = sr.ReadLine();
+                    }
+
+                }
+            }
+        }
+        private void ResetLinesuFile()
+        {
+
+            string line;
+            string[] weaponTemp = new string[6];
+            using (StreamWriter sw = new StreamWriter("TutorialLines.txt"))
+            {
+
+                using (StreamReader sr = new StreamReader("TutorialLinesBackup.txt"))
+                {
+                    line = sr.ReadLine();
+                    while (line != null)
+                    {
+                        sw.WriteLine(line);
+                        line = sr.ReadLine();
+                    }
+
+                }
+            }
+        }
+
+
         private void btnOpenDebug_Click(object sender, EventArgs e)
         {
             debug.Show();

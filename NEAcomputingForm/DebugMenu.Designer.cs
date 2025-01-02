@@ -47,6 +47,13 @@
             btnaddtokens = new Button();
             btnLockpick = new Button();
             btnCrash = new Button();
+            btnChangeTokens = new Button();
+            btnChangeAmountTrained = new Button();
+            btnChangeStatEff = new Button();
+            btnResetFiles = new Button();
+            button1 = new Button();
+            button2 = new Button();
+            button3 = new Button();
             SuspendLayout();
             // 
             // btnClr
@@ -237,11 +244,88 @@
             btnCrash.UseVisualStyleBackColor = true;
             btnCrash.Click += btnCrash_Click;
             // 
+            // btnChangeTokens
+            // 
+            btnChangeTokens.Location = new Point(205, 201);
+            btnChangeTokens.Name = "btnChangeTokens";
+            btnChangeTokens.Size = new Size(193, 23);
+            btnChangeTokens.TabIndex = 19;
+            btnChangeTokens.Text = "Change tokens per level";
+            btnChangeTokens.UseVisualStyleBackColor = true;
+            btnChangeTokens.Click += btnChangeTokens_Click;
+            // 
+            // btnChangeAmountTrained
+            // 
+            btnChangeAmountTrained.Location = new Point(205, 230);
+            btnChangeAmountTrained.Name = "btnChangeAmountTrained";
+            btnChangeAmountTrained.Size = new Size(193, 23);
+            btnChangeAmountTrained.TabIndex = 20;
+            btnChangeAmountTrained.Text = "Change amount trained";
+            btnChangeAmountTrained.UseVisualStyleBackColor = true;
+            btnChangeAmountTrained.Click += btnChangeAmountTrained_Click;
+            // 
+            // btnChangeStatEff
+            // 
+            btnChangeStatEff.Location = new Point(205, 259);
+            btnChangeStatEff.Name = "btnChangeStatEff";
+            btnChangeStatEff.Size = new Size(193, 23);
+            btnChangeStatEff.TabIndex = 21;
+            btnChangeStatEff.Text = "Change stat efficiency";
+            btnChangeStatEff.UseVisualStyleBackColor = true;
+            btnChangeStatEff.Click += btnChangeStatEff_Click;
+            // 
+            // btnResetFiles
+            // 
+            btnResetFiles.Location = new Point(2, 172);
+            btnResetFiles.Name = "btnResetFiles";
+            btnResetFiles.Size = new Size(193, 23);
+            btnResetFiles.TabIndex = 22;
+            btnResetFiles.Text = "Reset Files";
+            btnResetFiles.UseVisualStyleBackColor = true;
+            btnResetFiles.Click += btnResetFiles_Click;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(2, 201);
+            button1.Name = "button1";
+            button1.Size = new Size(193, 23);
+            button1.TabIndex = 23;
+            button1.Text = "Reset Weapons File";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(2, 230);
+            button2.Name = "button2";
+            button2.Size = new Size(193, 23);
+            button2.TabIndex = 24;
+            button2.Text = "Reset Menu File";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(2, 259);
+            button3.Name = "button3";
+            button3.Size = new Size(193, 23);
+            button3.TabIndex = 25;
+            button3.Text = "Reset Tutorial Lines File";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
             // DebugMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button3);
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(btnResetFiles);
+            Controls.Add(btnChangeStatEff);
+            Controls.Add(btnChangeAmountTrained);
+            Controls.Add(btnChangeTokens);
             Controls.Add(btnCrash);
             Controls.Add(btnLockpick);
             Controls.Add(btnaddtokens);
@@ -289,5 +373,12 @@
         private Button btnaddtokens;
         private Button btnLockpick;
         private Button btnCrash;
+        private Button btnChangeTokens;
+        private Button btnChangeAmountTrained;
+        private Button btnChangeStatEff;
+        private Button btnResetFiles;
+        private Button button1;
+        private Button button2;
+        private Button button3;
     }
 }
