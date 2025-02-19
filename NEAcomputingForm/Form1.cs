@@ -189,7 +189,12 @@ namespace NEAcomputingForm
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
-            loadLevels(1);//loads in the levels in the level set specified
+           
+            for(int i = 0;i < 5; i++) 
+            { 
+                loadLevels(i);
+                //loads in the levels in the level set specified
+            }
             loadLevelsets();//loads in the name difficulty etc for all of the level sets
             team.AddToSquad(new Specialist("Debug man"));
             if (currentSpecialist == null) { currentSpecialist = team.GetSquad().First();  }
