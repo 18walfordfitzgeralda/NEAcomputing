@@ -285,7 +285,7 @@ namespace NEAcomputingForm
             database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
             for (int i = 0; i < database.Tables[0].Rows.Count; i++)
             {
-                levels[i].setTheName(database.Tables[0].Rows[i].Field<string>(1));
+                levels[i].setTheName((database.Tables[0].Rows[i].Field<string>(1)).ToString());  //this line has just started bugging (when no changes have been made to the code) and I dont know why
                 levels[i].setDifficulty(database.Tables[0].Rows[i].Field<string>(3));
                 levels[i].setDesc(database.Tables[0].Rows[i].Field<string>(2));
             }
