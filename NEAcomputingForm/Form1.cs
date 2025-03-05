@@ -179,12 +179,12 @@ namespace NEAcomputingForm
         private void LoadThingsIn() //calls on all of the different load subroutines to ensure everything is loaded in 
         {
             tierBuffs.Add(0, ("Bad", 0));
-            tierBuffs.Add(1, ("Poor", 0));
-            tierBuffs.Add(2, ("Basic", 0));
-            tierBuffs.Add(3, ("Standard", 0));
-            tierBuffs.Add(4, ("Augmented", 0));
-            tierBuffs.Add(5, ("Militarised", 0));
-            tierBuffs.Add(6, ("Unimpressionable", 0));
+            tierBuffs.Add(1, ("Poor", 1));
+            tierBuffs.Add(2, ("Basic", 2));
+            tierBuffs.Add(3, ("Standard", 3));
+            tierBuffs.Add(4, ("Augmented", 4));
+            tierBuffs.Add(5, ("Militarised", 5));
+            tierBuffs.Add(6, ("Unimpressionable", 6));
             
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
@@ -330,7 +330,7 @@ namespace NEAcomputingForm
                     string enemyWeapon = row.Field<string>(2);
                     int enemyDodgeChance = row.Field<int>(3);
                     int enemyAim = row.Field<int>(4);
-                    int enemyLevel = row.Field<int>(5);
+                    int enemyLevel = (row.Field<int>(5))-(5*(levelSetNum-1));
                     Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
                 }
@@ -451,16 +451,16 @@ namespace NEAcomputingForm
         private void SaveProgress(SaveLoad temp)
         {
             string filename = temp.saveName + ".json";
-            if (!File.Exists(@"SaveFolders\" + filename))
+            if (!File.Exists(@"SaveFolder\" + filename))
             {
-                var tempfile = File.Create(@"SavesFolder\" + filename);
+                var tempfile = File.Create(@"SaveFolder\" + filename);
                 tempfile.Close();
                 Output("File created");
             }
             Output("Saving file");
             string file = JsonConvert.SerializeObject(temp);
 
-            using (StreamWriter Fred = new StreamWriter(@"SavesFolder\" + filename))
+            using (StreamWriter Fred = new StreamWriter(@"SaveFolder\" + filename))
             {
                 Fred.Write(file);
 
@@ -472,7 +472,7 @@ namespace NEAcomputingForm
         {
             try
             {
-                string file = File.ReadAllText(@"SavesFolder\" + documentName + ".json");
+                string file = File.ReadAllText(@"SaveFolder\" + documentName + ".json");
                 SaveLoad temp = new SaveLoad();
                 temp = JsonConvert.DeserializeObject<SaveLoad>(file);
                 int i = 0;
@@ -971,7 +971,7 @@ namespace NEAcomputingForm
             combatTurn.setListSpecialists(conciousSpecialists);
             foreach (Enemy enemy in currentlevel.getEnemyList())
             {
-                Output("Enemy health:" + enemy.getHealth().ToString());
+                Output("Enemy:"+ enemy.getName()+ " Health:" + enemy.getHealth().ToString());
             }
 
             Output("0: select next specialist");
@@ -1124,7 +1124,8 @@ namespace NEAcomputingForm
                     Weapon weapon = enemy.GetWeapon();
                     for (int i = 0; i < team.GetSquad().Count; i++)
                     {
-                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim())&&!(checkIfDodge(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetAgility()/specialistStatToPercentChanceConversion))))||checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion*1.5)))))))
+                        bool tempMiss = checkIfDodge(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetAgility() / specialistStatToPercentChanceConversion))))||checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion*1.5)))));
+                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim())&&!(tempMiss))
                         {
                             team.GetSquad()[i].Damage((weapon.getType1Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType1());
                             Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
@@ -1171,7 +1172,7 @@ namespace NEAcomputingForm
             llbCombat.Text = "Yes";
             if (startingCombat)
             {
-                currentlevel = levels[0].GetLevels()[0]; //(Debug) loads the player into the test level
+                currentlevel = levels[selectedLevelset].GetLevels()[selectedLevel]; //(Debug) loads the player into the test level // debug replaced with real thing
                 startingCombat = false;
             }
 
@@ -1185,6 +1186,7 @@ namespace NEAcomputingForm
                 llbCombat.Text = "No";
                 Output("Player lost");
                 CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                DisplayCurrentMenu();
             } // checks to see if the player has lost
             if (checkIfPlayerWin())
             {
@@ -1193,6 +1195,7 @@ namespace NEAcomputingForm
                 enemyTurn = false;
                 llbCombat.Text = "No";
                 Output("Player win");
+                DisplayCurrentMenu();
             } //checks to see if the player has won
 
             if (playerTurn && !optionsOnDisplay && inCombat)
@@ -1542,7 +1545,14 @@ namespace NEAcomputingForm
             foreach (Weapon weapon in this.weapons) { if (weapon.getName().Equals(Weapon.getName())) { temp100ish = true; } ;count++; }
             if (temp100ish)
             {
-                weapons[count].increaseTier(tierbuffs);
+                try
+                {
+                    weapons[count].increaseTier(tierbuffs);
+                }
+                catch 
+                {
+                    
+                }
             }
             else {
                 this.weapons.Add(Weapon);
