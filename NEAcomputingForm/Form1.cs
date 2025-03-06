@@ -1180,22 +1180,26 @@ namespace NEAcomputingForm
 
             if (checkIfPlayerLost())
             {
-                inCombat = false;
+                
                 playerTurn = false;
                 enemyTurn = false;
+                inCombat = false;
                 llbCombat.Text = "No";
-                Output("Player lost");
+                
                 CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
+                currentSpecialist.Heal(999,false);
                 DisplayCurrentMenu();
+                Output("Player lost");
             } // checks to see if the player has lost
             if (checkIfPlayerWin())
             {
-                inCombat = false;
+               
                 playerTurn = false;
                 enemyTurn = false;
+                inCombat = false;
                 llbCombat.Text = "No";
-                Output("Player win");
                 DisplayCurrentMenu();
+                Output("Player won");
             } //checks to see if the player has won
 
             if (playerTurn && !optionsOnDisplay && inCombat)
@@ -1225,6 +1229,7 @@ namespace NEAcomputingForm
                     playerTurnNext = true;
                     playerTurn = true;
                     startingCombat = true;
+                    Output("Entering levels");
                 }
                 else { Output("This level is currently locked"); }
             }
@@ -1705,17 +1710,20 @@ namespace NEAcomputingForm
         }
         public void Heal(int amountHealed, bool addsShield)
         {
-            if (this.currentHealth + amountHealed > this.maxHealth && !addsShield)
+            if ((this.currentHealth + amountHealed > this.maxHealth) && !addsShield)
             {
                 currentHealth = maxHealth;
+                this.conscious = true;
             }
             else if (this.currentHealth + amountHealed > this.maxHealth && addsShield)
             {
                 currentHealth += amountHealed;
+                this.conscious = true;
             }
             else
             {
                 currentHealth += amountHealed;
+                this.conscious = true;
             }
 
         }
