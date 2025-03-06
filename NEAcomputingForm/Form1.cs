@@ -1017,6 +1017,7 @@ namespace NEAcomputingForm
                 playerTurnNext = false;
                 llbCombat.Text = "False";
                 Output("Leaving combat");
+                currentSpecialist.Heal(100,false);
 
             }
            
@@ -1093,7 +1094,7 @@ namespace NEAcomputingForm
             { 
                 if (selectedLevel < 5) 
                 { 
-                    levels[selectedLevelset - 1].GetLevels()[selectedLevel + 1].unlocked = true; 
+                    levels[selectedLevelset - 1].GetLevels()[selectedLevel].unlocked = true; 
                 }
                 Secretbase.addTrainingTokens(numberOfTrainingTokensOnWin);
                 return true;
@@ -1198,6 +1199,7 @@ namespace NEAcomputingForm
                 enemyTurn = false;
                 inCombat = false;
                 llbCombat.Text = "No";
+                currentSpecialist.Heal(999, false);
                 DisplayCurrentMenu();
                 Output("Player won");
             } //checks to see if the player has won
@@ -1244,7 +1246,7 @@ namespace NEAcomputingForm
         //here are all of the debug subroutines
         private void debutton4_Click(object sender, EventArgs e)
         {
-            team.GetSquad()[0].Heal(999999999, true);
+            team.GetSquad()[0].Heal(999, true);
         }
         public void DebugMenuAccess(int buttonNumber)
         {
@@ -1272,7 +1274,7 @@ namespace NEAcomputingForm
             {
                 startCombat();
             }
-            if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(99999999, true); } catch { } }
+            if (buttonNumber == 6) { try { team.GetSquad()[0].Heal(999, true); } catch { } }
             if (buttonNumber == 7) { team.GetSquad()[0].EmptyWeaponBag(Secretbase.GetWeapons()[0]); }
             if (buttonNumber == 8)
             {
@@ -1697,7 +1699,7 @@ namespace NEAcomputingForm
         {
             this.conscious = true;
             this.maxHealth = 99 + Convert.ToInt32(Math.Round(Convert.ToDouble(this.endurance / 100)));
-            this.Heal(999999, false);
+            this.Heal(999, false);
 
         }
         public bool isConcious()
