@@ -57,6 +57,7 @@ namespace NEAcomputingForm
         private void Runtime2_Tick(object sender, EventArgs e)
         {
             labelTime.Text = Convert.ToString(Convert.ToInt16(labelTime.Text) + 1);//increments the time by 1 every second
+            lblTrainingTokens.Text = Convert.ToString(Secretbase.getTrainingTokens());
         }
         private void Runtime_Tick(object sender, EventArgs e) //does various things every second to attempt to prevent certain bugs 
         {
@@ -168,9 +169,11 @@ namespace NEAcomputingForm
         //Load subroutines
         private void Form1_Load(object sender, EventArgs e) //this is called when form1 initially loads in
         {
+            this.CenterToScreen();
             menuList.Add(CurrentMenu);
             debug = new DebugMenu();
             form2 = new NumpadButtons();
+            
             form2.Show();//Makes the numpad visible
             LoadThingsIn();
             CurrentMenu.SetMenuList(menuList);
@@ -185,19 +188,19 @@ namespace NEAcomputingForm
             tierBuffs.Add(4, ("Augmented", 4));
             tierBuffs.Add(5, ("Militarised", 5));
             tierBuffs.Add(6, ("Unimpressionable", 6));
-            
+
             LoadTutorial();//loads in the tutorial
             LoadWeapons();//loads in all the weapons
             LoadMenus("Menus.txt");//loads in all the menus from specified file
-           
-            for(int i = 0;i < 5; i++) 
-            { 
+
+            for (int i = 0; i < 5; i++)
+            {
                 loadLevels(i);
                 //loads in the levels in the level set specified
             }
             loadLevelsets();//loads in the name difficulty etc for all of the level sets
-            team.AddToSquad(new Specialist("Debug man"));
-            if (currentSpecialist == null) { currentSpecialist = team.GetSquad().First();  }
+            team.AddToSquad(new Specialist("Fred"));
+            if (currentSpecialist == null) { currentSpecialist = team.GetSquad().First(); }
             try
             {
                 CurrentMenu = menuList[1];//Sets the current menu to the main menu now that loading is done
@@ -213,7 +216,7 @@ namespace NEAcomputingForm
                 //loads in the players starting weapons
                 Weapon knife = new Weapon("Knife", "Sharp", "None", 10, 0, 1, 0);
                 knife.setOwned();
-                Secretbase.addWeapon(knife,tierBuffs);
+                Secretbase.addWeapon(knife, tierBuffs);
                 Weapon Club = new Weapon("Club", "Blunt", "None", 20, 0, 2, 0);
                 Club.setOwned();
                 Secretbase.addWeapon(Club, tierBuffs);
@@ -307,7 +310,7 @@ namespace NEAcomputingForm
 
                 SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\n" +
                     "FROM LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\n" +
-                    "WHERE (((Levels.LevelSetNum)="+levelSetNum.ToString()+"));";//just in case
+                    "WHERE (((Levels.LevelSetNum)=" + levelSetNum.ToString() + "));";//just in case
 
                 //SQL = "SELECT Enemies.*, Levels.LevelSetNum\r\nFROM LevelsAndSetLink, LevelSets INNER JOIN (Levels INNER JOIN Enemies ON Levels.LevelNum = Enemies.LevelNum) ON LevelSets.LevelSetNum = Levels.LevelSetNum\r\nWHERE (((Levels.LevelSetNum)=1));";
                 database = loadDataSet(SQL);//retrieves the information needed from the table using the input SQL statement
@@ -324,13 +327,14 @@ namespace NEAcomputingForm
                 {
 
                     //(DEBUG) THIS IS NOT RUNNING, THIS NEEDS TO BE FIXED BEFORE I CAN TEST THE COMBAT SYSTEM *****************
+                    //fixed
 
                     int enemyID = row.Field<int>(0);//these lines put all of the info into temporary variables
                     string enemyName = row.Field<string>(1);
                     string enemyWeapon = row.Field<string>(2);
                     int enemyDodgeChance = row.Field<int>(3);
                     int enemyAim = row.Field<int>(4);
-                    int enemyLevel = (row.Field<int>(5))-(5*(levelSetNum-1));
+                    int enemyLevel = (row.Field<int>(5)) - (5 * (levelSetNum - 1));
                     Enemy tempE = new Enemy(enemyName, enemyWeapon, enemyDodgeChance, enemyAim, weaponshop);//This bit of code loads all of the information provided by the data base into an enemy
                     templv[enemyLevel - 1].AddEnemy(tempE);//The enemy is then added into the level which is currently stored in templv. The -1 is to convert the index which starts at one which the database uses into ther index 0 starting point arrays use
                 }
@@ -639,7 +643,7 @@ namespace NEAcomputingForm
                     handleWeaponChanges("Ballistic");
                     break;
                 case "Explosive":
-                    
+
                     handleWeaponChanges("Explosive");
                     break;
                 case "Melee":
@@ -735,12 +739,13 @@ namespace NEAcomputingForm
         } //handles all of the non integer inputs from menus
         private void buyWeapon(Weapon purchasedweapon)
         {
-            for (int i=0;i<Secretbase.GetWeapons().Count-1;i++) 
+            for (int i = 0; i < Secretbase.GetWeapons().Count - 1; i++)
             {
                 if (Secretbase.GetWeapons()[i].getName().Equals(purchasedweapon.getName()) && Secretbase.GetWeapons()[i].checkIfOwned())
                 {
                     Output("The tier of the weapon has increased");
-                } else if (Secretbase.GetWeapons()[i].getName().Equals(purchasedweapon.getName())) 
+                }
+                else if (Secretbase.GetWeapons()[i].getName().Equals(purchasedweapon.getName()))
                 {
                     Output("The weapon has been purchased");
                 }
@@ -750,19 +755,20 @@ namespace NEAcomputingForm
             DisplayCurrentMenu();
         }
 
-        private void outputWeaponListForShop(string weaponType) 
+        private void outputWeaponListForShop(string weaponType)
         {
             selectedType = weaponType;
-            
+
             CurrentMenu = CurrentMenu.GoToNextMenu("15", CurrentMenu);
             DisplayCurrentMenu();
             outputWeaponNameForShop();
         }
-        public void outputWeaponNameForShop() 
+        public void outputWeaponNameForShop()
         {
 
             int count = 1;
-            foreach (Weapon weapon in weaponshop.getShopInventory()) 
+
+            foreach (Weapon weapon in weaponshop.getShopInventory())
             {
                 if (weapon.getDamageType1().Equals(selectedType))
                 {
@@ -770,9 +776,9 @@ namespace NEAcomputingForm
                     count++;
                 }
             }
-        
+
         }
-        private void selectWeaponBuy(int slotNumber) 
+        private void selectWeaponBuy(int slotNumber)
         {
             int count = 1;
             List<Weapon> weapons = new List<Weapon>();
@@ -782,54 +788,55 @@ namespace NEAcomputingForm
                 {
                     weapons.Add(weapon);
                 }
-                
+
             }
             if (slotNumber <= weapons.Count)
             {
                 buyWeapon(weapons[slotNumber - 1]);
             }
-            else 
-            { 
-                Output("That choice does not have a weapon please try again"); 
+            else
+            {
+                Output("That choice does not have a weapon please try again");
                 CurrentMenu = CurrentMenu.GoToNextMenu("2", CurrentMenu);
                 DisplayCurrentMenu();
             }
 
 
         }
-        private void selectWeapon(int num) 
-        { 
+        private void selectWeapon(int num)
+        {
             List<Weapon> weaponsInCategory = new List<Weapon>();
-            foreach (Weapon weapon in Secretbase.GetWeapons()) 
+
+            foreach (Weapon weapon in Secretbase.GetWeapons())
             {
-                if (weapon.getDamageType1().Equals(selectedType)) 
+                if (weapon.getDamageType1().Equals(selectedType))
                 {
                     weaponsInCategory.Add(weapon);
                 }
-            
+
             }
             if (num > weaponsInCategory.Count)
             { }
-            else 
-            { 
-              selectedWeapon = weaponsInCategory[num-1];
+            else
+            {
+                selectedWeapon = weaponsInCategory[num - 1];
             }
-            
+
             CurrentMenu = CurrentMenu.GoToNextMenu("13", CurrentMenu);
             DisplayCurrentMenu();
-            
-            
+
+
 
         }
 
-        private void selectSlot(int num) 
+        private void selectSlot(int num)
         {
-                 selectedSlot = num;
-                 Output("Putting the weapon in the slot");
-                 putWeaponInSlot();
+            selectedSlot = num;
+            Output("Putting the weapon in the slot");
+            putWeaponInSlot();
         }
 
-        private void putWeaponInSlot() 
+        private void putWeaponInSlot()
         {
             if (selectedWeapon.getName() != "SelectedWeaponPlaceHolder")
             {
@@ -842,17 +849,20 @@ namespace NEAcomputingForm
         {
             selectedType = weaponType;
             List<Weapon> weaponsOfCorrectType = new List<Weapon>();
+            int count = 0;
             foreach (Weapon weapon in Secretbase.GetWeapons())
             {
-                if (weapon.getDamageType1().Equals(weaponType)) { weaponsOfCorrectType.Add(weapon); }
+                if (weapon.getDamageType1().Equals(weaponType)) { weaponsOfCorrectType.Add(weapon); count++; }
             }
-            
+
             CurrentMenu = CurrentMenu.GoToNextMenu("12", CurrentMenu);
             DisplayCurrentMenu();
-            int count = 0;
+
+            Output(" ");
+           
             foreach (Weapon weapon in weaponsOfCorrectType)
             {
-                Output("Weapon " + (count + 1).ToString() + ":" + weapon.getName());
+                Output("Weapon " + (count).ToString() + ":" + weapon.getName());
             }
         }
         private void specialistMenuHandle(int input)
@@ -971,7 +981,7 @@ namespace NEAcomputingForm
             combatTurn.setListSpecialists(conciousSpecialists);
             foreach (Enemy enemy in currentlevel.getEnemyList())
             {
-                Output("Enemy:"+ enemy.getName()+ " Health:" + enemy.getHealth().ToString());
+                Output("Enemy:" + enemy.getName() + " Health:" + enemy.getHealth().ToString());
             }
 
             Output("0: select next specialist");
@@ -1017,68 +1027,69 @@ namespace NEAcomputingForm
                 playerTurnNext = false;
                 llbCombat.Text = "False";
                 Output("Leaving combat");
-                currentSpecialist.Heal(100,false);
+                currentSpecialist.Heal(100, false);
 
             }
-           
-            
-                for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
+
+
+            for (int i = 0; i < currentlevel.getEnemyList().Count; i++)
+            {
+
+                if (!optionDone)
                 {
-
-                    if (!optionDone)
+                    if (currentlevel.getEnemyList()[i].getHealth() > 0)
                     {
-                        if (currentlevel.getEnemyList()[i].getHealth() > 0)
+                        int maxNumberOfHits = Convert.ToInt16(currentSpecialist.getStamina() / option.getStaminaCost());
+                        for (int t = 0; t < maxNumberOfHits; t += option.getStaminaCost())
                         {
-                            int maxNumberOfHits = Convert.ToInt16(currentSpecialist.getStamina() / option.getStaminaCost());
-                            for (int t = 0; t<maxNumberOfHits;t+=option.getStaminaCost()) {
-                                               
-                                bool hit = (checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion))))|| checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(Convert.ToDouble(currentSpecialist.GetLuck()) / (specialistStatToPercentChanceConversion * 1.5))))) )&&!checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance()) ;
-                                if (hit)
-                                {
-                                    int damage1resist = 1;
-                                    int damage2resist = 1;
 
-                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
-                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+                            bool hit = (checkIfHit(Convert.ToInt16(Math.Round(Convert.ToDouble(currentSpecialist.GetPerception() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(Convert.ToDouble(currentSpecialist.GetLuck()) / (specialistStatToPercentChanceConversion * 1.5)))))) && !checkIfDodge(currentlevel.getEnemyList()[i].getDodgeChance());
+                            if (hit)
+                            {
+                                int damage1resist = 1;
+                                int damage2resist = 1;
 
-                                    int damage1 = (option.getOptionDamage1() / damage1resist);
-                                    int damage2 = (option.getOptionDamage2() / damage2resist);
-                                    if (option.getOptionDamageType1() == "Sharp" || option.getOptionDamageType1() == "Blunt")
-                                    {
-                                        damage1 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage1resist;
-                                    }
-                                    if (option.getOptionDamageType2() == "Sharp" || option.getOptionDamageType2() == "Blunt")
-                                    {
-                                        damage2 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage2resist;
-                                    }
-                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
-                                }
+                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
 
-                                if (option.getOptionDamageType1() == "Explosive"&&!hit)
+                                int damage1 = (option.getOptionDamage1() / damage1resist);
+                                int damage2 = (option.getOptionDamage2() / damage2resist);
+                                if (option.getOptionDamageType1() == "Sharp" || option.getOptionDamageType1() == "Blunt")
                                 {
-                                    int damage1resist = 4;
-                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
-                                    int damage1 = option.getOptionDamage1() / damage1resist;
-                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
+                                    damage1 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage1resist;
                                 }
-                                if (option.getOptionDamageType2() == "Explosive"&&!hit)
+                                if (option.getOptionDamageType2() == "Sharp" || option.getOptionDamageType2() == "Blunt")
                                 {
-                                    int damage2resist = 4;
-                                    if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
-                                    int damage2 = option.getOptionDamage2() / damage2resist;
-                                    currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
+                                    damage2 += Convert.ToInt16(currentSpecialist.GetStrength() / Convert.ToInt16(specialistStatToPercentChanceConversion * specialistStatToPercentChanceConversion)) / damage2resist;
                                 }
+                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1 - damage2);
                             }
 
+                            if (option.getOptionDamageType1() == "Explosive" && !hit)
+                            {
+                                int damage1resist = 4;
+                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType1())) { damage1resist = 999; }
+                                int damage1 = option.getOptionDamage1() / damage1resist;
+                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage1);
+                            }
+                            if (option.getOptionDamageType2() == "Explosive" && !hit)
+                            {
+                                int damage2resist = 4;
+                                if (currentlevel.getEnemyList()[i].CheckResistance(option.getOptionDamageType2())) { damage2resist = 999; }
+                                int damage2 = option.getOptionDamage2() / damage2resist;
+                                currentlevel.getEnemyList()[i].setHealth(currentlevel.getEnemyList()[i].getHealth() - damage2);
+                            }
                         }
-
-
 
                     }
 
 
-                
+
                 }
+
+
+
+            }
             playerTurn = false;
             enemyTurn = true;
         }
@@ -1090,11 +1101,11 @@ namespace NEAcomputingForm
             {
                 if (enemy.getHealth() <= 0) count++;
             }
-            if (count == currentlevel.getEnemyList().Count) 
-            { 
-                if (selectedLevel < 5) 
-                { 
-                    levels[selectedLevelset - 1].GetLevels()[selectedLevel].unlocked = true; 
+            if (count == currentlevel.getEnemyList().Count)
+            {
+                if (selectedLevel < 5)
+                {
+                    levels[selectedLevelset].GetLevels()[selectedLevel].unlocked = true;
                 }
                 Secretbase.addTrainingTokens(numberOfTrainingTokensOnWin);
                 return true;
@@ -1117,7 +1128,7 @@ namespace NEAcomputingForm
         //enemy combat stuff
         private void enemyCombatTurn()
         {
-            
+
             foreach (Enemy enemy in currentlevel.getEnemyList())
             {
                 if (enemy.getHealth() > 0)
@@ -1125,8 +1136,8 @@ namespace NEAcomputingForm
                     Weapon weapon = enemy.GetWeapon();
                     for (int i = 0; i < team.GetSquad().Count; i++)
                     {
-                        bool tempMiss = checkIfDodge(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetAgility() / specialistStatToPercentChanceConversion))))||checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion*1.5)))));
-                        if (team.GetSquad()[i].isConcious()&&checkIfHit(enemy.GetAim())&&!(tempMiss))
+                        bool tempMiss = checkIfDodge(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetAgility() / specialistStatToPercentChanceConversion)))) || checkIfLucky(Convert.ToInt16(Math.Round(Convert.ToDouble(team.GetSquad()[i].GetLuck() / (specialistStatToPercentChanceConversion * 1.5)))));
+                        if (team.GetSquad()[i].isConcious() && checkIfHit(enemy.GetAim()) && !(tempMiss))
                         {
                             team.GetSquad()[i].Damage((weapon.getType1Damage() + tierBuffs[weapon.getTier()].Item2), weapon.getDamageType1());
                             Output(team.GetSquad()[i].getName() + " is now on " + team.GetSquad()[i].getCurrentHealth());
@@ -1147,20 +1158,20 @@ namespace NEAcomputingForm
 
         } //performs the combat turn of the enemy
 
-        private bool checkIfHit(int aim) 
+        private bool checkIfHit(int aim)
         {
             Random random = new Random();
-            if (random.Next(0,100)<=aim) { return true; }//the higher the aim the greater the chance to hit
+            if (random.Next(0, 100) <= aim) { return true; }//the higher the aim the greater the chance to hit
             return false;
-        
+
         }
-        private bool checkIfLucky(int luck) 
+        private bool checkIfLucky(int luck)
         {
             Random random = new Random();
             if (random.Next(0, 100) <= luck) { return true; }//the higher the luck the greater the chance to get lucky
             return false;
         }
-        private bool checkIfDodge(int dodgeChance) 
+        private bool checkIfDodge(int dodgeChance)
         {
             Random random = new Random();
             if (random.Next(0, 100) <= dodgeChance) { return true; }//the higher the dodgeChance the greater the chance to dodge
@@ -1173,7 +1184,7 @@ namespace NEAcomputingForm
             llbCombat.Text = "Yes";
             if (startingCombat)
             {
-                currentlevel = levels[selectedLevelset].GetLevels()[selectedLevel]; //(Debug) loads the player into the test level // debug replaced with real thing
+                //currentlevel = levels[selectedLevelset-1].GetLevels()[selectedLevel-1]; //(Debug) loads the player into the test level // debug replaced with real thing
                 startingCombat = false;
             }
 
@@ -1181,20 +1192,20 @@ namespace NEAcomputingForm
 
             if (checkIfPlayerLost())
             {
-                
+
                 playerTurn = false;
                 enemyTurn = false;
                 inCombat = false;
                 llbCombat.Text = "No";
-                
+
                 CurrentMenu = CurrentMenu.GoToNextMenu("9", CurrentMenu);
-                currentSpecialist.Heal(999,false);
+                currentSpecialist.Heal(999, false);
                 DisplayCurrentMenu();
                 Output("Player lost");
             } // checks to see if the player has lost
             if (checkIfPlayerWin())
             {
-               
+
                 playerTurn = false;
                 enemyTurn = false;
                 inCombat = false;
@@ -1223,7 +1234,7 @@ namespace NEAcomputingForm
         {
             try
             {
-                currentlevel = levels[selectedLevelset - 1].GetLevels()[selectedLevel - 1];
+                currentlevel = levels[selectedLevelset].GetLevels()[selectedLevel - 1];
                 if (currentlevel.unlocked || selectedLevel == 1)
                 {
                     currentlevel.unlocked = true;
@@ -1291,13 +1302,14 @@ namespace NEAcomputingForm
             }
             if (buttonNumber == 11) { Secretbase.addTrainingTokens(10); }
             if (buttonNumber == 12) { currentlevel.unlocked = true; }
-            if (buttonNumber == 13) 
+            if (buttonNumber == 13)
             {
-                try 
+                try
                 {
                     int temp = numberOfTrainingTokensOnWin;
                     temp = Convert.ToInt32(debugStringAccess);
-                }catch 
+                }
+                catch
                 {
                     Output("Apologies an error has occured while converting that string into a number");
                     Output("The number you have attempted to change has retained its value");
@@ -1332,26 +1344,26 @@ namespace NEAcomputingForm
                 }
 
             }
-            if (buttonNumber == 16) 
-            { 
+            if (buttonNumber == 16)
+            {
                 ResetWeaponFile();
                 ResetMenuFile();
                 ResetLinesuFile();
             }
-            if(buttonNumber == 17) { ResetWeaponFile(); }
+            if (buttonNumber == 17) { ResetWeaponFile(); }
             if (buttonNumber == 18) { ResetMenuFile(); }
             if (buttonNumber == 19) { ResetLinesuFile(); }
 
         } //the function that allows the debug menu to do stuff in the main form
 
 
-        private void ResetWeaponFile() 
+        private void ResetWeaponFile()
         {
             string line;
             string[] weaponTemp = new string[6];
             using (StreamWriter sw = new StreamWriter("Weapons.txt"))
             {
-                
+
                 using (StreamReader sr = new StreamReader("WeaponsBackup.txt"))
                 {
                     line = sr.ReadLine();
@@ -1366,7 +1378,7 @@ namespace NEAcomputingForm
         }
         private void ResetMenuFile()
         {
-           
+
             string line;
             string[] weaponTemp = new string[6];
             using (StreamWriter sw = new StreamWriter("Menus.txt"))
@@ -1439,7 +1451,7 @@ namespace NEAcomputingForm
         }//among us (this is a temporary debug line
 
         //shop and other logistics
-        
+
 
         private void llbCombat_Click(object sender, EventArgs e)
         {
@@ -1454,7 +1466,7 @@ namespace NEAcomputingForm
         {
             try
             {
-               
+
                 OleDbConnection conn = connection(dbasename);
 
                 //I have traced the problem with the enemies not being loaded in all the way back to here, the rows of the database are simply just not making it into the program, why: I have no clue *************
@@ -1476,7 +1488,7 @@ namespace NEAcomputingForm
         {
             string conStr = "Provider=Microsoft.ACE.OLEDB.16.0;Data Source=" + database + ".accdb";//provides the connection string to allow the program to access the database
 
-            
+
 
             OleDbConnection conn = new OleDbConnection(conStr);
             try
@@ -1549,19 +1561,20 @@ namespace NEAcomputingForm
         {
             bool temp100ish = false;
             int count = 0;
-            foreach (Weapon weapon in this.weapons) { if (weapon.getName().Equals(Weapon.getName())) { temp100ish = true; } ;count++; }
+            foreach (Weapon weapon in this.weapons) { if (weapon.getName().Equals(Weapon.getName())) { temp100ish = true; }; count++; }
             if (temp100ish)
             {
                 try
                 {
                     weapons[count].increaseTier(tierbuffs);
                 }
-                catch 
+                catch
                 {
-                    
+
                 }
             }
-            else {
+            else
+            {
                 this.weapons.Add(Weapon);
             }
         }
@@ -1627,8 +1640,8 @@ namespace NEAcomputingForm
         }
         public void setOwned() { this.owned = true; }
         public void setUnowned() { this.owned = false; }
-        public void increaseTier(Dictionary<int,(string,int)> tierbuffs) 
-        { 
+        public void increaseTier(Dictionary<int, (string, int)> tierbuffs)
+        {
             this.tierNumber += 1;
             this.tier = tierbuffs[tierNumber].Item1;
         }
@@ -1681,13 +1694,13 @@ namespace NEAcomputingForm
 
         public int getStamina()
         {
-            return this.currentStamina;   
+            return this.currentStamina;
         }
-        public void removeStamina(int num) 
+        public void removeStamina(int num)
         {
             this.currentStamina -= num;
         }
-        public void resetCurrentStamina() 
+        public void resetCurrentStamina()
         {
             this.maxstamina = 4 + this.agility / 100;
             this.currentStamina = this.maxstamina;
@@ -1813,9 +1826,9 @@ namespace NEAcomputingForm
             this.baggedWeapons[index] = Secretbase.GetWeapons()[i];
 
         }
-        public void SetWeapon(int index, Weapon weapon) 
+        public void SetWeapon(int index, Weapon weapon)
         {
-            this.baggedWeapons[index-1] = weapon;
+            this.baggedWeapons[index - 1] = weapon;
         }
         public void EmptyWeaponBag(Weapon weapon) //sets all of the weapons in the weapon bag to the input weapon, intended for use with the "None" weapon
         {
@@ -1876,7 +1889,7 @@ namespace NEAcomputingForm
         List<Enemy> enemyList = new List<Enemy>();//each of the levels has a list of enemies that must be defeated
         int levelNum;
         int levelSetNum;
-        public bool unlocked=false;
+        public bool unlocked = false;
         public Level(int levelNum, int levelSetNum)
         {
             this.levelNum = levelNum;
@@ -2008,14 +2021,14 @@ namespace NEAcomputingForm
         {
             Weapon[] bag = person.GetWeaponBag();
             this.options = new List<CombatOption>();
-            for (int i =0;i<bag.Length;i++) 
-            { 
-                if (bag[i] ==null) { bag[i]= new Weapon("None","None","None",0,0,1,0); }
+            for (int i = 0; i < bag.Length; i++)
+            {
+                if (bag[i] == null) { bag[i] = new Weapon("None", "None", "None", 0, 0, 1, 0); }
             }
-            
+
             foreach (Weapon weapon in bag)
             {
-                
+
                 string optionName = weapon.getName();
                 string DmgType1 = weapon.getDamageType1();
                 string DmgType2 = weapon.getDamageType2();

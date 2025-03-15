@@ -42,6 +42,8 @@
             label5 = new Label();
             llbCombat = new Label();
             btnOpenDebug = new Button();
+            lblTrainingTokens = new Label();
+            label6 = new Label();
             SuspendLayout();
             // 
             // txtOut
@@ -138,20 +140,20 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(395, 28);
+            label5.Location = new Point(460, 28);
             label5.Name = "label5";
-            label5.Size = new Size(69, 15);
+            label5.Size = new Size(64, 15);
             label5.TabIndex = 22;
-            label5.Text = "In combat?:";
+            label5.Text = "In combat:";
             // 
             // llbCombat
             // 
             llbCombat.AutoSize = true;
-            llbCombat.Location = new Point(405, 43);
+            llbCombat.Location = new Point(481, 43);
             llbCombat.Name = "llbCombat";
-            llbCombat.Size = new Size(31, 15);
+            llbCombat.Size = new Size(23, 15);
             llbCombat.TabIndex = 23;
-            llbCombat.Text = "flase";
+            llbCombat.Text = "No";
             llbCombat.Click += llbCombat_Click;
             // 
             // btnOpenDebug
@@ -164,11 +166,31 @@
             btnOpenDebug.UseVisualStyleBackColor = true;
             btnOpenDebug.Click += btnOpenDebug_Click;
             // 
+            // lblTrainingTokens
+            // 
+            lblTrainingTokens.AutoSize = true;
+            lblTrainingTokens.Location = new Point(187, 43);
+            lblTrainingTokens.Name = "lblTrainingTokens";
+            lblTrainingTokens.Size = new Size(13, 15);
+            lblTrainingTokens.TabIndex = 25;
+            lblTrainingTokens.Text = "0";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(171, 28);
+            label6.Name = "label6";
+            label6.Size = new Size(91, 15);
+            label6.TabIndex = 26;
+            label6.Text = "Training Tokens:";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(806, 450);
+            Controls.Add(label6);
+            Controls.Add(lblTrainingTokens);
             Controls.Add(btnOpenDebug);
             Controls.Add(llbCombat);
             Controls.Add(label5);
@@ -202,5 +224,7 @@
         private Label label5;
         private Label llbCombat;
         private Button btnOpenDebug;
+        private Label lblTrainingTokens;
+        private Label label6;
     }
 }
